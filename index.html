@@ -7,32 +7,52 @@
 <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
-<header>
-  <h1>STM32 HW Support in Zephyr</h1>
-  <p class="subtitle">
-    Auto-generated view of which STM32 peripherals (devicetree
-    <code>compatible</code>) are upstream in
-    <a href="https://github.com/zephyrproject-rtos/zephyr" target="_blank" rel="noopener noreferrer">zephyrproject-rtos/zephyr</a>,
-    per STM32 series. Devicetree is treated as the source of truth: a node is
-    only ever upstreamed together with its driver. Refreshed daily on
-    <code>main</code>, snapshotted once per stable release.
-  </p>
-  <div class="controls">
-    <label for="ref-select">Zephyr ref:</label>
-    <select id="ref-select"></select>
-    <input id="search-box" type="search" placeholder="Filter by API, compatible, category…" />
-    <span class="legend">
-      <span class="legend-item"><span class="legend-swatch cell-supported"></span>supported</span>
-      <span class="legend-item"><span class="legend-swatch cell-absent"></span>not declared</span>
-    </span>
+<header class="hero">
+  <div class="hero-inner">
+    <h1>STM32 HW Support in Zephyr</h1>
+    <p class="subtitle">
+      Auto-generated view of which STM32 peripherals (devicetree
+      <code>compatible</code>) are upstream in
+      <a href="https://github.com/zephyrproject-rtos/zephyr" target="_blank" rel="noopener noreferrer">zephyrproject-rtos/zephyr</a>,
+      per STM32 series. Devicetree is treated as the source of truth: a node is
+      only ever upstreamed together with its driver. Refreshed daily on
+      <code>main</code>, snapshotted once per stable release.
+    </p>
+    <div class="controls">
+      <label for="ref-select">Zephyr ref:</label>
+      <select id="ref-select"></select>
+      <input id="search-box" type="search" placeholder="Filter by API, compatible, category…" />
+      <span class="legend">
+        <span class="legend-item"><span class="legend-swatch cell-supported"></span>supported</span>
+        <span class="legend-item"><span class="legend-swatch cell-absent"></span>not declared</span>
+      </span>
+    </div>
+    <p id="commit-info" class="commit-info"></p>
   </div>
-  <p id="commit-info" class="commit-info"></p>
 </header>
 
-<main>
-  <section id="series-meta" class="series-meta"></section>
+<main class="page">
+  <section>
+    <h2 class="section-heading">Series</h2>
+    <p class="note">
+      SoC count is the number of SoC part numbers listed for that series in
+      Zephyr's own catalog
+      (<code>soc/st/stm32/soc.yml</code>), i.e. SoCs with an upstream Zephyr
+      port — not ST's full orderable part catalog, which may list
+      additional package/temperature variants not individually declared in
+      Zephyr. Click a SoC count to see the list. Click a column header to sort.
+    </p>
+    <div id="series-table-container"></div>
+  </section>
 
-  <div id="table-container"></div>
+  <section>
+    <h2 class="section-heading">API coverage</h2>
+    <p class="note">
+      One row per category by default; click a row (or the ▸) to expand
+      the per-<code>compatible</code> detail.
+    </p>
+    <div id="table-container"></div>
+  </section>
 </main>
 
 <footer>
