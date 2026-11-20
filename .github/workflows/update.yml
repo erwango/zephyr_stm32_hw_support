@@ -23,12 +23,25 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
+      - name: Clone hal_stm32
+        # Used to classify devicetree-absent peripherals as "not_ported" vs
+        # "not_available" (see scripts/scan_hal_stm32.py). hal_stm32's main
+        # branch is used for every scanned ref: on-chip IP presence for an
+        # already-released series doesn't change retroactively, and new
+        # hal_stm32 history only adds series, so this is a deliberate
+        # simplification over resolving the exact hal_stm32 revision pinned
+        # by each Zephyr ref's west manifest.
+        run: |
+          git clone --depth 1 --branch main \
+            https://github.com/zephyrproject-rtos/hal_stm32 /tmp/hal_stm32
+
       - name: Scan main
         run: |
           git clone --depth 1 --branch main \
             https://github.com/zephyrproject-rtos/zephyr /tmp/zephyr-main
           python3 scripts/scan_zephyr.py \
             --zephyr-path /tmp/zephyr-main --ref main \
+            --hal-stm32-path /tmp/hal_stm32 \
             --mode inplace --output data/main.json
 
       - name: Discover new stable releases
@@ -69,6 +82,7 @@ jobs:
               subprocess.run(
                   ["python3", "scripts/scan_zephyr.py",
                    "--zephyr-path", clone_dir, "--ref", ref,
+                   "--hal-stm32-path", "/tmp/hal_stm32",
                    "--mode", "inplace", "--output", f"data/{ref}.json"],
                   check=True,
               )

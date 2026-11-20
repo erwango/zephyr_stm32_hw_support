@@ -1,0 +1,116 @@
+# Curated ground-truth table: maps an STM32Cube on-chip IP token to the
+# dashboard's devicetree-derived "group/category" (the same axis as
+# scan_zephyr.py's CATEGORY_GROUPS/CATEGORY_OVERRIDES, just keyed by
+# silicon IP name instead of DT binding directory).
+#
+# This table exists to answer, for a (category, series) cell where the
+# devicetree scan found no compatible node: is that because the series'
+# silicon genuinely has no such IP ("not_available"), or because the IP is
+# on-chip but nobody has upstreamed the Zephyr binding/driver for it yet
+# ("not_ported")? scan_zephyr.py only ever makes that distinction for
+# entries listed below -- never by guessing from a token's spelling (e.g.
+# "adf" vs "adc"). A single IP may back more than one dashboard category
+# (e.g. a TIM block backs "timer", "pwm" and "counter" DT bindings), hence
+# `categories` is a list.
+#
+# Tokens are STM32Cube's own peripheral token, as embedded in HAL driver
+# filenames: <series>_hal_<token>.h / .c (see scan_hal_stm32.py). Governance:
+# this file is a plain, PR-reviewed data file -- there is no live/editable
+# UI. New tokens discovered by scan_hal_stm32.py that are not listed in
+# `ips` or `ignored` below are reported as a build warning ("unclassified"),
+# never silently guessed or dropped.
+#
+# `ignored`: real STM32Cube tokens deliberately excluded from the
+# silicon-vs-ported comparison because they are baseline/umbrella
+# infrastructure present on every series by construction (RCC, GPIO, PWR,
+# ...) rather than a peripheral an application opts into, or because they
+# are security/debug infra with no corresponding dashboard category.
+#
+# Anything that is a genuine, distinguishable on-chip peripheral but not
+# yet confident enough to classify (e.g. newer/rare IPs) is intentionally
+# left out of both lists below: it will surface as an "unclassified" build
+# warning instead of silently defaulting anywhere, so it gets triaged
+# (added to `ips` or `ignored`) instead of guessed.
+
+ips:
+  adc: {categories: ["analog/adc"]}
+  dac: {categories: ["analog/dac"]}
+  comp: {categories: ["analog/comparator"]}
+  opamp: {categories: ["analog/opamp"]}
+
+  sai: {categories: ["multimedia/audio"]}
+  dfsdm: {categories: ["multimedia/audio"]}
+  adf: {categories: ["multimedia/audio"], notes: "Audio Digital Filter (PDM mic front-end), not ADC."}
+  mdf: {categories: ["multimedia/audio"], notes: "MDF: ADF successor on newer series (e.g. U5)."}
+  spdifrx: {categories: ["multimedia/audio"]}
+  dcmi: {categories: ["multimedia/video"]}
+  jpeg: {categories: ["multimedia/video"]}
+  ltdc: {categories: ["multimedia/display"]}
+  dma2d: {categories: ["multimedia/display"]}
+  gfxmmu: {categories: ["multimedia/display"]}
+  dsi: {categories: ["multimedia/mipi-dsi"]}
+
+  eth: {categories: ["communication/ethernet"]}
+  pcd: {categories: ["communication/usb"], notes: "USB device (Peripheral Controller Driver)."}
+  hcd: {categories: ["communication/usb"], notes: "USB host (Host Controller Driver)."}
+  ucpd: {categories: ["communication/tcpc"]}
+  can: {categories: ["communication/can"]}
+  fdcan: {categories: ["communication/can"]}
+  i2c: {categories: ["communication/i2c"]}
+  i3c: {categories: ["communication/i3c"]}
+  i2s: {categories: ["communication/i2s"]}
+  spi: {categories: ["communication/spi"]}
+  uart: {categories: ["communication/serial"]}
+  usart: {categories: ["communication/serial"]}
+  lpuart: {categories: ["communication/serial"]}
+  smartcard: {categories: ["communication/serial"]}
+  irda: {categories: ["communication/serial"]}
+
+  sdmmc: {categories: ["memory/sdhc"]}
+  sd: {categories: ["memory/sdhc"]}
+  mmc: {categories: ["memory/sdhc"]}
+  qspi: {categories: ["memory/xspi"]}
+  ospi: {categories: ["memory/xspi"]}
+  xspi: {categories: ["memory/xspi"]}
+  fmc: {categories: ["memory/memory-controllers"]}
+  fsmc: {categories: ["memory/memory-controllers"]}
+  nand: {categories: ["memory/mtd"]}
+  nor: {categories: ["memory/mtd"]}
+
+  rng: {categories: ["security/rng"]}
+  cryp: {categories: ["security/crypto"]}
+  aes: {categories: ["security/crypto"]}
+  hash: {categories: ["security/crypto"]}
+  pka: {categories: ["security/crypto"]}
+  bsec: {categories: ["security/otp"], notes: "Boot and security (OTP fuses)."}
+  otp: {categories: ["security/otp"]}
+  crc: {categories: ["security/crc"]}
+
+  tim: {categories: ["system/timer", "system/pwm", "system/counter"]}
+  lptim: {categories: ["system/timer", "system/pwm", "system/counter"]}
+  hrtim: {categories: ["system/pwm"]}
+  rtc: {categories: ["system/rtc"]}
+  iwdg: {categories: ["system/watchdog"]}
+  wwdg: {categories: ["system/watchdog"]}
+  dma: {categories: ["system/dma"]}
+  bdma: {categories: ["system/dma"]}
+  dmamux: {categories: ["system/dma"]}
+  gpdma: {categories: ["system/dma"]}
+  hpdma: {categories: ["system/dma"]}
+
+  cordic: {categories: ["misc/misc"], notes: "Math accelerator, no dedicated dashboard category."}
+  fmac: {categories: ["misc/misc"], notes: "Filter math accelerator, no dedicated dashboard category."}
+
+ignored:
+  - rcc
+  - gpio
+  - pwr
+  - exti
+  - syscfg
+  - dbgmcu
+  - flash
+  - icache
+  - dcache
+  - gtzc
+  - ramecc
+  - tamp

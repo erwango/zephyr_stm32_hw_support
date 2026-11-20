@@ -19,6 +19,13 @@ the driver source), but it has no effect on the reported support status.
 SoC port, so they are reported as metadata only and excluded from the
 per-series coverage grid.
 
+When --hal-stm32-path is given, a devicetree-absent hardware peripheral is
+further classified as "not_ported" (STM32Cube has the IP for this series,
+per scan_hal_stm32.py + ip_catalog.yaml, but no Zephyr binding exists yet)
+or "not_available" (STM32Cube has no such IP for this series either).
+Without it, devicetree-absent peripherals are reported as "absent" (i.e.
+unknown), matching this script's previous behavior exactly.
+
 The result is written as a single JSON document. See README for the schema.
 
 This script never mutates the given --zephyr-path checkout: use --mode
@@ -44,6 +51,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
+
+import scan_hal_stm32
 
 # Binding category directory (dts/bindings/<CATEGORY>/) -> catalog group.
 # Any category not listed here is bucketed into "other" and reported as a
@@ -371,7 +380,12 @@ def build_driver_index(zephyr_root: Path) -> dict[str, list[str]]:
     return index
 
 
-def build_report(zephyr_root: Path, ref: str) -> dict:
+def build_report(
+    zephyr_root: Path,
+    ref: str,
+    hal_stm32_path: Path | None = None,
+    ip_catalog_path: Path | None = None,
+) -> dict:
     commit = run_git(["rev-parse", "HEAD"], zephyr_root)
     series_catalog = load_series_catalog(zephyr_root)
 
@@ -410,6 +424,40 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
         ]
         series_out.append({"name": name, "cores": sorted(scanned_cores), "socs": socs_out})
     series_out.sort(key=lambda s: s["name"])
+
+    # Ground truth for the "not_ported" vs "not_available" distinction (see
+    # module docstring). category_silicon_tokens inverts ip_catalog.yaml's
+    # token -> [(group, category), ...] into (group, category) -> tokens, so
+    # a category with no curated IP mapping falls back to today's plain
+    # "absent" (unknown) below, unchanged.
+    hal_stm32_commit = None
+    ip_tokens_by_series: dict[str, set[str]] = {}
+    category_silicon_tokens: dict[tuple[str, str], set[str]] = {}
+    if hal_stm32_path is not None:
+        try:
+            hal_stm32_commit = run_git(["rev-parse", "HEAD"], hal_stm32_path)
+        except subprocess.CalledProcessError:
+            hal_stm32_commit = None
+
+        ips, ignored_ip_tokens = scan_hal_stm32.load_ip_catalog(ip_catalog_path)
+        for token, cats in ips.items():
+            for group, category in cats:
+                category_silicon_tokens.setdefault((group, category), set()).add(token)
+
+        discovered_tokens: set[str] = set()
+        for s in series_out:
+            series_dir = scan_hal_stm32.hal_series_dir(hal_stm32_path, s["name"])
+            tokens = scan_hal_stm32.discover_series_ip_tokens(series_dir) if series_dir else set()
+            ip_tokens_by_series[s["name"]] = tokens
+            discovered_tokens.update(tokens)
+
+        unclassified_ip_tokens = discovered_tokens - set(ips) - ignored_ip_tokens
+        if unclassified_ip_tokens:
+            print(
+                f"warning: IP tokens discovered in hal_stm32 with no ip_catalog.yaml "
+                f"entry (add to 'ips' or 'ignored'): {sorted(unclassified_ip_tokens)}",
+                file=sys.stderr,
+            )
 
     driver_index = build_driver_index(zephyr_root)
     bindings = discover_bindings(zephyr_root)
@@ -458,10 +506,21 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
         if not baseline:
             macro = compatible_to_macro(binding["compatible"])
             driver_paths = driver_index.get(macro, [])
+            # None (no curated IP mapping for this category) keeps the
+            # plain supported/absent behavior below unchanged.
+            silicon_tokens = category_silicon_tokens.get((group, category))
             series_support = {}
             for s in series_out:
-                declared = binding["compatible"] in declared_by_series.get(s["name"], set())
-                series_support[s["name"]] = "supported" if declared else "absent"
+                name = s["name"]
+                declared = binding["compatible"] in declared_by_series.get(name, set())
+                if declared:
+                    status = "supported"
+                elif silicon_tokens:
+                    on_silicon = bool(silicon_tokens & ip_tokens_by_series.get(name, set()))
+                    status = "not_ported" if on_silicon else "not_available"
+                else:
+                    status = "absent"
+                series_support[name] = status
             api_entry["driver_paths"] = driver_paths
             api_entry["series_support"] = series_support
 
@@ -549,6 +608,7 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
     return {
         "ref": ref,
         "zephyr_commit": commit,
+        "hal_stm32_commit": hal_stm32_commit,
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "series": series_out,
         "categories": categories_out,
@@ -561,6 +621,22 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ref", required=True, help="Git ref to scan (branch, tag, or commit). Must already be resolvable in --zephyr-path.")
     parser.add_argument("--output", required=True, type=Path, help="Output JSON file path.")
     parser.add_argument(
+        "--hal-stm32-path",
+        type=Path,
+        default=None,
+        help="Optional path to a local hal_stm32 git checkout (zephyrproject-rtos/hal_stm32). "
+        "When given, devicetree-absent hardware peripherals are further classified as "
+        "'not_ported' or 'not_available' (see module docstring); without it, behavior is "
+        "unchanged ('absent').",
+    )
+    parser.add_argument(
+        "--ip-catalog",
+        type=Path,
+        default=Path(__file__).parent / "ip_catalog.yaml",
+        help="Path to the IP token -> category curated mapping (see ip_catalog.yaml). "
+        "Only used when --hal-stm32-path is given.",
+    )
+    parser.add_argument(
         "--mode",
         choices=["worktree", "inplace"],
         default="worktree",
@@ -571,7 +647,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     with checkout_ref(args.zephyr_path, args.ref, args.mode) as root:
-        report = build_report(root, args.ref)
+        report = build_report(root, args.ref, args.hal_stm32_path, args.ip_catalog)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
