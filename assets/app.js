@@ -10,7 +10,6 @@ const state = {
   search: "",
   expandedCategories: new Set(),
   expandedSeries: new Set(),
-  seriesSort: { key: "name", dir: 1 },
 };
 
 async function fetchJSON(path) {
@@ -23,6 +22,36 @@ async function fetchJSON(path) {
 
 function seriesShortName(name) {
   return name.replace(/^stm32/, "").replace(/x$/, "").toUpperCase();
+}
+
+// STM32MPx parts are microprocessors: Zephyr targets one specific core (an
+// M-class companion core, or the application core itself for MP13), while
+// other on-chip cores are outside Zephyr's scope.
+function isMpuSeries(seriesName) {
+  return /^stm32mp/i.test(seriesName);
+}
+
+const CORE_LABELS = {
+  m0: "Cortex-M0",
+  "m0+": "Cortex-M0+",
+  m3: "Cortex-M3",
+  m4: "Cortex-M4",
+  m4f: "Cortex-M4",
+  m7: "Cortex-M7",
+  m33: "Cortex-M33",
+  m55: "Cortex-M55",
+  a7: "Cortex-A7",
+};
+
+const CORE_ORDER = ["m0", "m0+", "m3", "m4", "m4f", "m7", "m33", "m55", "a7"];
+
+function coreLabel(core) {
+  return CORE_LABELS[core] || `Cortex-${core.toUpperCase()}`;
+}
+
+function coreSortIndex(core) {
+  const i = CORE_ORDER.indexOf(core);
+  return i === -1 ? CORE_ORDER.length : i;
 }
 
 // Zephyr's published docs use "/latest/" for main and "/<X.Y.Z>/" (no "v"
@@ -74,109 +103,102 @@ function matchesFilter(category, api, needle) {
 }
 
 // ---------------------------------------------------------------------
-// Series table (sortable, with expandable SoC list)
+// Series (grouped by Cortex core, with an expandable SoC list per series)
 // ---------------------------------------------------------------------
 
-function sortSeriesRows(seriesList, sort) {
-  const rows = [...seriesList];
-  rows.sort((a, b) => {
-    let av;
-    let bv;
-    if (sort.key === "cores") {
-      av = [...a.cores].sort().join(",");
-      bv = [...b.cores].sort().join(",");
-    } else if (sort.key === "socs") {
-      av = a.socs.length;
-      bv = b.socs.length;
-    } else {
-      av = a.name;
-      bv = b.name;
-    }
-    if (av < bv) return -1 * sort.dir;
-    if (av > bv) return 1 * sort.dir;
-    return a.name.localeCompare(b.name) * sort.dir;
-  });
-  return rows;
-}
-
-function renderSeriesTable(report) {
+function renderSeriesGroups(report) {
   const container = document.getElementById("series-table-container");
   container.replaceChildren();
 
-  const table = document.createElement("table");
-  table.className = "series-table";
-  const thead = document.createElement("thead");
-  const headRow = document.createElement("tr");
-  const columns = [
-    { key: "name", label: "Series" },
-    { key: "cores", label: "Cortex core(s)" },
-    { key: "socs", label: "SoCs" },
-  ];
-  for (const col of columns) {
-    const th = document.createElement("th");
-    th.textContent = col.label;
-    th.className = "sortable col-header-text";
-    if (state.seriesSort.key === col.key) {
-      th.textContent += state.seriesSort.dir === 1 ? " \u25b2" : " \u25bc";
-    }
-    th.addEventListener("click", () => {
-      if (state.seriesSort.key === col.key) {
-        state.seriesSort.dir *= -1;
-      } else {
-        state.seriesSort = { key: col.key, dir: 1 };
+  const groups = new Map(); // core label -> [{ series, core }]
+  for (const s of report.series) {
+    const cores = s.cores.length ? s.cores : ["?"];
+    for (const core of cores) {
+      const label = coreLabel(core);
+      if (!groups.has(label)) {
+        groups.set(label, { order: coreSortIndex(core), entries: [] });
       }
-      renderSeriesTable(report);
-    });
-    headRow.appendChild(th);
-  }
-  thead.appendChild(headRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  const rows = sortSeriesRows(report.series, state.seriesSort);
-  for (const s of rows) {
-    const tr = document.createElement("tr");
-
-    const nameCell = document.createElement("td");
-    nameCell.className = "col-header-text";
-    nameCell.textContent = seriesShortName(s.name);
-    nameCell.title = s.name;
-    tr.appendChild(nameCell);
-
-    const coresCell = document.createElement("td");
-    coresCell.className = "col-header-text";
-    coresCell.textContent = s.cores.length ? s.cores.join(", ") : "?";
-    tr.appendChild(coresCell);
-
-    const socsCell = document.createElement("td");
-    socsCell.className = "col-header-text soc-toggle";
-    const expanded = state.expandedSeries.has(s.name);
-    socsCell.textContent = `${s.socs.length} ${expanded ? "\u25be" : "\u25b8"}`;
-    socsCell.addEventListener("click", () => {
-      if (state.expandedSeries.has(s.name)) {
-        state.expandedSeries.delete(s.name);
-      } else {
-        state.expandedSeries.add(s.name);
-      }
-      renderSeriesTable(report);
-    });
-    tr.appendChild(socsCell);
-
-    tbody.appendChild(tr);
-
-    if (expanded) {
-      const detailTr = document.createElement("tr");
-      detailTr.className = "detail-row";
-      const detailTd = document.createElement("td");
-      detailTd.colSpan = columns.length;
-      detailTd.className = "soc-list";
-      detailTd.textContent = s.socs.join(", ");
-      detailTr.appendChild(detailTd);
-      tbody.appendChild(detailTr);
+      groups.get(label).entries.push({ series: s, core });
     }
   }
-  table.appendChild(tbody);
-  container.appendChild(table);
+
+  const labels = [...groups.keys()].sort(
+    (a, b) => groups.get(a).order - groups.get(b).order || a.localeCompare(b)
+  );
+
+  const grid = document.createElement("div");
+  grid.className = "series-groups";
+
+  for (const label of labels) {
+    const { entries } = groups.get(label);
+    entries.sort((a, b) => a.series.name.localeCompare(b.series.name));
+
+    const card = document.createElement("div");
+    card.className = "core-group";
+
+    const heading = document.createElement("h3");
+    heading.textContent = `${label} `;
+    const count = document.createElement("span");
+    count.className = "core-group-count";
+    count.textContent = `(${entries.length})`;
+    heading.appendChild(count);
+    card.appendChild(heading);
+
+    const chipRow = document.createElement("div");
+    chipRow.className = "series-chip-row";
+
+    for (const { series, core } of entries) {
+      const chipKey = `${core}::${series.name}`;
+      const expanded = state.expandedSeries.has(chipKey);
+
+      const chip = document.createElement("span");
+      chip.className = "series-chip";
+      chip.title = series.name;
+      chip.addEventListener("click", () => {
+        if (state.expandedSeries.has(chipKey)) {
+          state.expandedSeries.delete(chipKey);
+        } else {
+          state.expandedSeries.add(chipKey);
+        }
+        renderSeriesGroups(report);
+      });
+
+      const chipText = document.createElement("span");
+      chipText.textContent = `${seriesShortName(series.name)} \u00b7 ${series.socs.length} ${expanded ? "\u25be" : "\u25b8"}`;
+      chip.appendChild(chipText);
+
+      if (isMpuSeries(series.name)) {
+        const badge = document.createElement("span");
+        badge.className = "mpu-badge";
+        badge.textContent = "MPU";
+        badge.title =
+          "Microprocessor: Zephyr targets this core; other on-chip cores (if any) are outside Zephyr's scope.";
+        chip.appendChild(badge);
+      }
+      if (series.cores.length > 1) {
+        const otherCores = series.cores.filter((c) => c !== core).map(coreLabel).join(", ");
+        const dual = document.createElement("span");
+        dual.className = "dual-core-badge";
+        dual.textContent = "multi-core";
+        dual.title = `Also available with: ${otherCores}`;
+        chip.appendChild(dual);
+      }
+
+      chipRow.appendChild(chip);
+
+      if (expanded) {
+        const detail = document.createElement("div");
+        detail.className = "soc-detail";
+        detail.textContent = series.socs.join(", ");
+        chipRow.appendChild(detail);
+      }
+    }
+
+    card.appendChild(chipRow);
+    grid.appendChild(card);
+  }
+
+  container.appendChild(grid);
 }
 
 // ---------------------------------------------------------------------
@@ -243,6 +265,12 @@ function buildApiDetailRow(ref, series, api) {
   );
   compatLink.className = "api-compat";
   nameCell.appendChild(compatLink);
+  if (api.origin_category) {
+    const origin = document.createElement("span");
+    origin.className = "origin-tag";
+    origin.textContent = `from ${api.origin_category}`;
+    nameCell.appendChild(origin);
+  }
   tr.appendChild(nameCell);
 
   for (const s of series) {
@@ -321,7 +349,7 @@ async function loadRef(ref) {
   state.expandedSeries = new Set();
   document.getElementById("commit-info").textContent =
     `${entry.ref} @ ${entry.zephyr_commit.slice(0, 12)} \u2014 generated ${entry.generated_at}`;
-  renderSeriesTable(state.report);
+  renderSeriesGroups(state.report);
   renderTable(state.report, state.search);
 }
 

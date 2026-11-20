@@ -125,46 +125,80 @@ h1 {
   line-height: 1.35;
 }
 
-.series-table {
+.series-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.6rem;
   margin-bottom: 0.75rem;
-  max-width: 44rem;
+}
+
+.core-group {
+  border: 1px solid var(--border);
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 30, 145, 0.08);
+  padding: 0.5rem 0.6rem;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 30, 145, 0.06);
 }
 
-.series-table th.sortable {
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.15s ease;
-}
-
-.series-table th.sortable:hover {
-  background: var(--brand-blue-dark);
-}
-
-.series-table tbody tr:hover td {
-  background: var(--brand-light-blue);
-}
-
-.soc-toggle {
-  cursor: pointer;
+.core-group h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
   color: var(--brand-blue);
-  font-weight: 600;
-  text-decoration: underline dotted;
-  transition: color 0.15s ease;
 }
 
-.soc-toggle:hover {
-  color: var(--brand-blue-dark);
+.core-group-count {
+  color: #888;
+  font-weight: 400;
+  margin-left: 0.15rem;
 }
 
-.soc-list {
-  text-align: left;
-  white-space: normal;
-  color: #57606a;
-  font-size: 0.7rem;
+.series-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.series-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.68rem;
+  cursor: pointer;
+  background: #f6f8fa;
+  transition: background 0.12s ease;
+}
+
+.series-chip:hover {
   background: var(--brand-light-blue);
+}
+
+.mpu-badge {
+  background: var(--brand-yellow);
+  color: #1b1f23;
+  border-radius: 999px;
+  padding: 0 0.35rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.dual-core-badge {
+  background: var(--brand-grey);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0 0.35rem;
+  font-size: 0.6rem;
+}
+
+.soc-detail {
+  flex-basis: 100%;
+  font-size: 0.66rem;
+  color: #57606a;
+  background: var(--brand-light-blue);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
 }
 
 .legend {
@@ -238,13 +272,13 @@ tbody td {
   background: var(--brand-grey);
 }
 
-.group-badge-base { background: #001e91; }
 .group-badge-system { background: #5b3fd1; }
 .group-badge-communication { background: #0b8fa3; }
-.group-badge-storage { background: #d9731e; }
+.group-badge-memory { background: #d9731e; }
 .group-badge-analog { background: #c23b7e; }
 .group-badge-multimedia { background: #a98a00; }
 .group-badge-sensor { background: #1b7f3a; }
+.group-badge-misc { background: #57606a; }
 .group-badge-other { background: var(--brand-grey); }
 
 .category-row {
@@ -255,13 +289,13 @@ tbody td {
   transition: background 0.12s ease;
 }
 
-.category-row.group-base { border-left-color: #001e91; }
 .category-row.group-system { border-left-color: #5b3fd1; }
 .category-row.group-communication { border-left-color: #0b8fa3; }
-.category-row.group-storage { border-left-color: #d9731e; }
+.category-row.group-memory { border-left-color: #d9731e; }
 .category-row.group-analog { border-left-color: #c23b7e; }
 .category-row.group-multimedia { border-left-color: #a98a00; }
 .category-row.group-sensor { border-left-color: #1b7f3a; }
+.category-row.group-misc { border-left-color: #57606a; }
 .category-row.group-other { border-left-color: var(--brand-grey); }
 
 .category-row:hover {
@@ -285,6 +319,13 @@ tbody td {
 .api-compat {
   color: #888;
   font-size: 0.68rem;
+  margin-left: 0.4rem;
+}
+
+.origin-tag {
+  color: #888;
+  font-size: 0.64rem;
+  font-style: italic;
   margin-left: 0.4rem;
 }
 
@@ -331,17 +372,20 @@ footer {
   .detail-row td {
     background: #0d1117;
   }
-  .soc-list {
+  .core-group {
     background: #161b22;
+    border-color: #30363d;
   }
-  .series-table tbody tr:hover td {
+  .series-chip {
+    background: #0d1117;
+    border-color: #30363d;
+  }
+  .series-chip:hover {
     background: #1c2128;
   }
-  .soc-toggle {
-    color: var(--brand-yellow);
-  }
-  .soc-toggle:hover {
-    color: #fff;
+  .soc-detail {
+    background: #1c2128;
+    color: #8b949e;
   }
   table,
   thead th,

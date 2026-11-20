@@ -2,13 +2,13 @@
   {
     "ref": "main",
     "file": "main.json",
-    "zephyr_commit": "fbe7a22abedfb04820714736a8038bb6af8c9751",
-    "generated_at": "2026-11-20T12:51:49Z"
+    "zephyr_commit": "e933642266335706aeccd0ca63a494689bb23391",
+    "generated_at": "2026-11-20T13:39:45Z"
   },
   {
     "ref": "v4.5.0",
     "file": "v4.5.0.json",
     "zephyr_commit": "41d10b59730406bbab4ca9f1fbbe9e96aafb4966",
-    "generated_at": "2026-11-20T12:51:38Z"
+    "generated_at": "2026-11-20T13:39:50Z"
   }
 ]

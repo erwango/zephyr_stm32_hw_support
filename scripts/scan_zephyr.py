@@ -48,18 +48,20 @@ import yaml
 # Binding category directory (dts/bindings/<CATEGORY>/) -> catalog group.
 # Any category not listed here is bucketed into "other" and reported as a
 # warning so the mapping can be kept up to date as zephyr evolves.
+#
+# "base" and "system" were previously two separate groups, but the line
+# between them (e.g. is PWM "base" or "system"?) was not obvious to readers,
+# so they are merged into a single "system" group.
 CATEGORY_GROUPS: dict[str, str] = {
-    # base
-    "power": "base",
-    "reset": "base",
-    "interrupt-controller": "base",
-    "gpio": "base",
-    "misc": "base",
-    "clock": "base",
-    "pinctrl": "base",
-    "dma": "base",
-    "regulator": "base",
-    # system
+    # system: core enablement + system-level services
+    "power": "system",
+    "reset": "system",
+    "interrupt-controller": "system",
+    "gpio": "system",
+    "clock": "system",
+    "pinctrl": "system",
+    "dma": "system",
+    "regulator": "system",
     "timer": "system",
     "counter": "system",
     "rtc": "system",
@@ -90,16 +92,16 @@ CATEGORY_GROUPS: dict[str, str] = {
     "net": "communication",
     "ethernet": "communication",
     "input": "communication",
-    # storage
-    "flash_controller": "storage",
-    "mtd": "storage",
-    "memory-controllers": "storage",
-    "ospi": "storage",
-    "qspi": "storage",
-    "xspi": "storage",
-    "mspi": "storage",
-    "sdhc": "storage",
-    "arm": "storage",
+    # memory
+    "flash_controller": "memory",
+    "mtd": "memory",
+    "memory-controllers": "memory",
+    "ospi": "memory",
+    "qspi": "memory",
+    "xspi": "memory",
+    "mspi": "memory",
+    "sdhc": "memory",
+    "arm": "memory",
     # analog / mixed-signal
     "adc": "analog",
     "dac": "analog",
@@ -114,6 +116,19 @@ CATEGORY_GROUPS: dict[str, str] = {
     # sensor (kept as its own group: ~100+ bindings)
     "sensor": "sensor",
 }
+
+# Explicit (group, category) overrides applied before CATEGORY_GROUPS lookup.
+# - "phy": all current st,stm32* phy bindings are USB HS PHY controllers, so
+#   they are folded into the "usb" category rather than kept as a separate
+#   one-off "phy" category.
+# - "misc": always bucketed into its own dedicated "misc" group/category.
+CATEGORY_OVERRIDES: dict[str, tuple[str, str]] = {
+    "phy": ("communication", "usb"),
+    "misc": ("misc", "misc"),
+}
+
+MISC_GROUP = "misc"
+MISC_CATEGORY = "misc"
 
 # Categories that are mandatory baseline requirements for any upstream SoC
 # port. Driver-presence detection is skipped for these (metadata only).
@@ -243,11 +258,15 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
     categories: dict[tuple[str, str], dict] = {}
     unmapped_categories: set[str] = set()
     for binding in bindings:
-        category = binding["category"]
-        group = CATEGORY_GROUPS.get(category)
-        if group is None:
-            group = "other"
-            unmapped_categories.add(category)
+        raw_category = binding["category"]
+        if raw_category in CATEGORY_OVERRIDES:
+            group, category = CATEGORY_OVERRIDES[raw_category]
+        else:
+            category = raw_category
+            group = CATEGORY_GROUPS.get(category)
+            if group is None:
+                group = "other"
+                unmapped_categories.add(category)
         baseline = category in BASELINE_CATEGORIES
 
         cat_entry = categories.setdefault(
@@ -279,6 +298,29 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
             f"{sorted(unmapped_categories)}",
             file=sys.stderr,
         )
+
+    # Any API supported by exactly one series is chip-specific enough that it
+    # clutters its "natural" category; move it into the dedicated misc
+    # bucket instead, tagging it with where it came from.
+    misc_key = (MISC_GROUP, MISC_CATEGORY)
+    misc_entry = categories.setdefault(
+        misc_key, {"group": MISC_GROUP, "name": MISC_CATEGORY, "baseline": False, "apis": []}
+    )
+    for key, cat in list(categories.items()):
+        if key == misc_key or cat["baseline"]:
+            continue
+        keep: list[dict] = []
+        for api in cat["apis"]:
+            supported = sum(1 for v in api["series_support"].values() if v == "supported")
+            if supported == 1:
+                api = {**api, "origin_category": cat["name"]}
+                misc_entry["apis"].append(api)
+            else:
+                keep.append(api)
+        cat["apis"] = keep
+    categories = {
+        key: cat for key, cat in categories.items() if cat["baseline"] or cat["apis"] or key == misc_key
+    }
 
     categories_out = sorted(categories.values(), key=lambda c: (c["group"], c["name"]))
     for cat in categories_out:
