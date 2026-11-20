@@ -258,12 +258,6 @@ function buildApiDetailRow(ref, series, api) {
   );
   compatLink.className = "api-compat";
   nameCell.appendChild(compatLink);
-  if (api.origin_category) {
-    const origin = document.createElement("span");
-    origin.className = "origin-tag";
-    origin.textContent = `from ${api.origin_category}`;
-    nameCell.appendChild(origin);
-  }
   tr.appendChild(nameCell);
 
   for (const s of series) {

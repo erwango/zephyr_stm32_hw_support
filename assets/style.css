@@ -307,13 +307,6 @@ tbody td {
   margin-left: 0.4rem;
 }
 
-.origin-tag {
-  color: #888;
-  font-size: 0.64rem;
-  font-style: italic;
-  margin-left: 0.4rem;
-}
-
 .cell-supported {
   background: var(--color-supported-bg);
   color: var(--color-supported);

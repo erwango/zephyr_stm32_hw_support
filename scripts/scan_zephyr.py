@@ -121,14 +121,17 @@ CATEGORY_GROUPS: dict[str, str] = {
 # - "phy": all current st,stm32* phy bindings are USB HS PHY controllers, so
 #   they are folded into the "usb" category rather than kept as a separate
 #   one-off "phy" category.
-# - "misc": always bucketed into its own dedicated "misc" group/category.
+# - "misc": the few bindings genuinely filed under dts/bindings/misc/ (e.g.
+#   NPU, RAM config) are bucketed into their own dedicated "misc"
+#   group/category. Unlike an earlier version of this script, a compatible
+#   is never moved into "misc" just because only one series supports it so
+#   far: series-count has no bearing on which peripheral category it
+#   belongs to (e.g. st,stm32-bdma is still a "dma" binding regardless of
+#   how many series have it upstream).
 CATEGORY_OVERRIDES: dict[str, tuple[str, str]] = {
     "phy": ("communication", "usb"),
     "misc": ("misc", "misc"),
 }
-
-MISC_GROUP = "misc"
-MISC_CATEGORY = "misc"
 
 # Categories that are mandatory baseline requirements for any upstream SoC
 # port. Driver-presence detection is skipped for these (metadata only).
@@ -299,28 +302,7 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
             file=sys.stderr,
         )
 
-    # Any API supported by exactly one series is chip-specific enough that it
-    # clutters its "natural" category; move it into the dedicated misc
-    # bucket instead, tagging it with where it came from.
-    misc_key = (MISC_GROUP, MISC_CATEGORY)
-    misc_entry = categories.setdefault(
-        misc_key, {"group": MISC_GROUP, "name": MISC_CATEGORY, "baseline": False, "apis": []}
-    )
-    for key, cat in list(categories.items()):
-        if key == misc_key or cat["baseline"]:
-            continue
-        keep: list[dict] = []
-        for api in cat["apis"]:
-            supported = sum(1 for v in api["series_support"].values() if v == "supported")
-            if supported == 1:
-                api = {**api, "origin_category": cat["name"]}
-                misc_entry["apis"].append(api)
-            else:
-                keep.append(api)
-        cat["apis"] = keep
-    categories = {
-        key: cat for key, cat in categories.items() if cat["baseline"] or cat["apis"] or key == misc_key
-    }
+    categories = {key: cat for key, cat in categories.items() if cat["apis"]}
 
     categories_out = sorted(categories.values(), key=lambda c: (c["group"], c["name"]))
     for cat in categories_out:
