@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+.venv/
+STM32_HW_Support.xlsm

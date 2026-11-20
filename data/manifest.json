@@ -1,0 +1,14 @@
+[
+  {
+    "ref": "main",
+    "file": "main.json",
+    "zephyr_commit": "fbe7a22abedfb04820714736a8038bb6af8c9751",
+    "generated_at": "2026-11-20T08:08:53Z"
+  },
+  {
+    "ref": "v4.5.0",
+    "file": "v4.5.0.json",
+    "zephyr_commit": "41d10b59730406bbab4ca9f1fbbe9e96aafb4966",
+    "generated_at": "2026-11-20T08:08:28Z"
+  }
+]

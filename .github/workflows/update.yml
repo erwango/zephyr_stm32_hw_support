@@ -1,0 +1,86 @@
+name: Update STM32 HW support data
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dashboard repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Scan main
+        run: |
+          git clone --depth 1 --branch main \
+            https://github.com/zephyrproject-rtos/zephyr /tmp/zephyr-main
+          python3 scripts/scan_zephyr.py \
+            --zephyr-path /tmp/zephyr-main --ref main \
+            --mode inplace --output data/main.json
+
+      - name: Discover new stable releases
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          import subprocess
+          from pathlib import Path
+
+          out = subprocess.run(
+              ["git", "ls-remote", "--tags", "--refs",
+               "https://github.com/zephyrproject-rtos/zephyr"],
+              check=True, capture_output=True, text=True,
+          ).stdout
+          tags = set(re.findall(r"refs/tags/(v\d+\.\d+\.\d+)$", out, re.MULTILINE))
+          existing = {p.stem for p in Path("data").glob("v*.json")}
+          todo = sorted(tags - existing)
+          Path("/tmp/new_releases.json").write_text(json.dumps(todo))
+          print("new releases to scan:", todo)
+          PY
+
+      - name: Scan new releases
+        run: |
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          todo = json.loads(Path("/tmp/new_releases.json").read_text())
+          for ref in todo:
+              clone_dir = f"/tmp/zephyr-{ref}"
+              subprocess.run(
+                  ["git", "clone", "--depth", "1", "--branch", ref,
+                   "https://github.com/zephyrproject-rtos/zephyr", clone_dir],
+                  check=True,
+              )
+              subprocess.run(
+                  ["python3", "scripts/scan_zephyr.py",
+                   "--zephyr-path", clone_dir, "--ref", ref,
+                   "--mode", "inplace", "--output", f"data/{ref}.json"],
+                  check=True,
+              )
+          PY
+
+      - name: Rebuild manifest
+        run: python3 scripts/build_manifest.py
+
+      - name: Commit data changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "data: update STM32 HW support snapshot"
+          git push
