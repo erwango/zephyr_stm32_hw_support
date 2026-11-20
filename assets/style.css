@@ -33,12 +33,10 @@ header.hero {
 }
 
 .hero-inner {
-  max-width: 90rem;
   margin: 0 auto;
 }
 
 .page {
-  max-width: 90rem;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -133,7 +131,7 @@ h1 {
 }
 
 .series-pivot {
-  width: auto;
+  width: 100%;
   font-size: 0.68rem;
 }
 
@@ -329,7 +327,6 @@ tbody td {
 }
 
 footer {
-  max-width: 90rem;
   margin: 1.5rem auto 0;
   padding: 0 1rem;
   font-size: 0.72rem;

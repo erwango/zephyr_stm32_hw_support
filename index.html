@@ -35,19 +35,9 @@
   <section>
     <h2 class="section-heading">Series</h2>
     <p class="note">
-      One row per Cortex core, one column per series; each cell is the
-      number of SoC part numbers for that series that use that core (a
-      series with more than one Zephyr-supported core, e.g. STM32H7's
-      M4/M7 dual-core parts, has a cell filled in on more than one row).
-      Click a cell to see that series' SoC list. A <strong>MPU</strong>
-      badge marks STM32MPx microprocessors: Zephyr targets that one core
-      only, and any other on-chip core (e.g. an application processor) is
-      outside Zephyr's scope. SoC count is the number of SoC part numbers
-      listed for that series in Zephyr's own catalog
-      (<code>soc/st/stm32/soc.yml</code>), i.e. SoCs with an upstream Zephyr
-      port — not ST's full orderable part catalog, which may list
-      additional package/temperature variants not individually declared in
-      Zephyr.
+      Rows = Cortex core, columns = series, cells = SoC count. Click a cell
+      for the SoC list. <strong>MPU</strong> = STM32MPx microprocessor;
+      Zephyr runs on that one core only.
     </p>
     <div id="series-table-container"></div>
   </section>
@@ -55,11 +45,9 @@
   <section>
     <h2 class="section-heading">API coverage</h2>
     <p class="note">
-      One row per category by default; click a row (or the ▸) to expand
-      the per-<code>compatible</code> detail. The <strong>Misc</strong>
-      group holds APIs that are either inherently miscellaneous, or
-      supported on only a single STM32 series — their original category is
-      noted next to the compatible when applicable.
+      Click a row (or ▸) to expand per-<code>compatible</code> detail.
+      <strong>Misc</strong> = miscellaneous or single-series APIs, tagged
+      with their original category.
     </p>
     <div id="table-container"></div>
   </section>
