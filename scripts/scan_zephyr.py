@@ -138,9 +138,22 @@ CATEGORY_OVERRIDES: dict[str, tuple[str, str]] = {
 # port. Driver-presence detection is skipped for these (metadata only).
 BASELINE_CATEGORIES = {"clock", "pinctrl"}
 
-COMPATIBLE_RE = re.compile(r'compatible\s*=\s*"([^"]+)"')
-CORE_RE = re.compile(r'compatible\s*=\s*"arm,cortex-([am]\d[0-9a-z+]*)"')
+# Devicetree nodes may declare a fallback list, e.g.
+#   compatible = "st,stm32f4-flash-controller", "st,stm32-flash-controller";
+# A regex that only captures the first quoted string misses every
+# compatible listed after it. COMPATIBLE_PROP_RE grabs the whole
+# comma-separated property value so every string in it can be extracted.
+COMPATIBLE_PROP_RE = re.compile(r'compatible\s*=\s*((?:"[^"]*"\s*,\s*)*"[^"]*")\s*;')
 DT_DRV_COMPAT_RE = re.compile(r"DT_DRV_COMPAT\s+(\w+)")
+
+
+def extract_compatibles(text: str) -> list[str]:
+    """Return every individual compatible string declared in `text`,
+    including fallback entries after the first in a multi-value list."""
+    out: list[str] = []
+    for prop in COMPATIBLE_PROP_RE.findall(text):
+        out.extend(re.findall(r'"([^"]*)"', prop))
+    return out
 
 
 def run_git(args: list[str], cwd: Path) -> str:
@@ -201,15 +214,29 @@ def scan_series_dts(zephyr_root: Path, dts_dir: str) -> tuple[set[str], set[str]
         return compatibles, cores
     for dtsi in base.rglob("*.dtsi"):
         text = dtsi.read_text(errors="ignore")
-        compatibles.update(m for m in COMPATIBLE_RE.findall(text) if m.startswith("st,stm32"))
-        cores.update(CORE_RE.findall(text))
+        for compat in extract_compatibles(text):
+            if compat.startswith("arm,cortex-"):
+                cores.add(compat.removeprefix("arm,cortex-"))
+            elif compat.startswith("st,"):
+                compatibles.add(compat)
     return compatibles, cores
 
 
 def discover_bindings(zephyr_root: Path) -> list[dict]:
+    """Discover candidate ST-authored devicetree bindings.
+
+    This purposely casts a wide net (every ``st,*.yaml`` binding, not just
+    ones named ``st,stm32*.yaml``): some genuine on-chip STM32 peripherals
+    use a different naming scheme, e.g. ``st,hci-stm32wba.yaml`` (Bluetooth
+    HCI) or ``st,mbox-stm32-hsem.yaml`` (HSEM mailbox). Bindings for
+    external/companion chips (sensors, PMICs, IO expanders, etc.) are also
+    matched here, but get filtered out later in build_report() based on
+    whether their compatible is actually declared by any STM32 series'
+    SoC devicetree.
+    """
     bindings_root = zephyr_root / "dts" / "bindings"
     entries = []
-    for yaml_path in sorted(bindings_root.glob("*/st,stm32*.yaml")):
+    for yaml_path in sorted(bindings_root.glob("*/st,*.yaml")):
         try:
             doc = yaml.safe_load(yaml_path.read_text())
         except yaml.YAMLError:
@@ -259,9 +286,18 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
     driver_index = build_driver_index(zephyr_root)
     bindings = discover_bindings(zephyr_root)
 
+    # Only compatibles actually declared by at least one STM32 series' own
+    # SoC devicetree are genuine on-chip peripherals; discover_bindings()
+    # casts a wide net that also matches external/companion-chip bindings
+    # (sensors, PMICs, IO expanders, generic SPI HCI framing, ...), which
+    # are dropped here instead of relying on a fragile filename convention.
+    all_declared_compatibles: set[str] = set().union(*declared_by_series.values())
+
     categories: dict[tuple[str, str], dict] = {}
     unmapped_categories: set[str] = set()
     for binding in bindings:
+        if binding["compatible"] not in all_declared_compatibles:
+            continue
         raw_category = binding["category"]
         if raw_category in CATEGORY_OVERRIDES:
             group, category = CATEGORY_OVERRIDES[raw_category]
