@@ -263,6 +263,7 @@ tbody td {
 .group-badge-analog { background: #c23b7e; }
 .group-badge-multimedia { background: #a98a00; }
 .group-badge-sensor { background: #1b7f3a; }
+.group-badge-security { background: #b42318; }
 .group-badge-misc { background: #57606a; }
 .group-badge-other { background: var(--brand-grey); }
 
@@ -280,6 +281,7 @@ tbody td {
 .category-row.group-analog { border-left-color: #c23b7e; }
 .category-row.group-multimedia { border-left-color: #a98a00; }
 .category-row.group-sensor { border-left-color: #1b7f3a; }
+.category-row.group-security { border-left-color: #b42318; }
 .category-row.group-misc { border-left-color: #57606a; }
 .category-row.group-other { border-left-color: var(--brand-grey); }
 

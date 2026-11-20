@@ -66,11 +66,12 @@ CATEGORY_GROUPS: dict[str, str] = {
     "counter": "system",
     "rtc": "system",
     "watchdog": "system",
-    "rng": "system",
-    "crypto": "system",
-    "crc": "system",
-    "otp": "system",
     "pwm": "system",
+    # security: crypto accelerators, RNG/TRNG, integrity/CRC, OTP key storage
+    "rng": "security",
+    "crypto": "security",
+    "crc": "security",
+    "otp": "security",
     # communication
     "usb": "communication",
     "can": "communication",
