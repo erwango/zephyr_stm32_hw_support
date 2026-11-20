@@ -122,6 +122,14 @@ CATEGORY_GROUPS: dict[str, str] = {
 # - "phy": all current st,stm32* phy bindings are USB HS PHY controllers, so
 #   they are folded into the "usb" category rather than kept as a separate
 #   one-off "phy" category.
+# - "ospi"/"qspi": folded into the "xspi" category since they're the same
+#   underlying octo/quad-SPI-capable controller family as xspi (just older
+#   per-width binding directories); grouping them avoids splitting one
+#   peripheral's coverage across 3 near-identical rows. "mspi" is NOT
+#   included here: despite living under the same dts/bindings/mspi/
+#   directory as some xspi-ish bindings, it's a distinct, newer
+#   multi-SPI-protocol abstraction, not just another xspi/qspi/ospi width
+#   variant.
 # - "misc": the few bindings genuinely filed under dts/bindings/misc/ (e.g.
 #   NPU, RAM config) are bucketed into their own dedicated "misc"
 #   group/category. Unlike an earlier version of this script, a compatible
@@ -131,6 +139,8 @@ CATEGORY_GROUPS: dict[str, str] = {
 #   how many series have it upstream).
 CATEGORY_OVERRIDES: dict[str, tuple[str, str]] = {
     "phy": ("communication", "usb"),
+    "ospi": ("memory", "xspi"),
+    "qspi": ("memory", "xspi"),
     "misc": ("misc", "misc"),
 }
 

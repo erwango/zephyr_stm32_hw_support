@@ -1,7 +1,7 @@
 {
   "ref": "v4.5.0",
   "zephyr_commit": "41d10b59730406bbab4ca9f1fbbe9e96aafb4966",
-  "generated_at": "2026-11-20T14:38:14Z",
+  "generated_at": "2026-11-20T15:20:32Z",
   "series": [
     {
       "name": "stm32c0x",
@@ -1602,6 +1602,8 @@
       "group": "analog",
       "name": "adc",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-adc",
@@ -1798,6 +1800,8 @@
       "group": "analog",
       "name": "comparator",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-comp",
@@ -1918,6 +1922,8 @@
       "group": "analog",
       "name": "dac",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-dac",
@@ -1964,6 +1970,8 @@
       "group": "analog",
       "name": "opamp",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-opamp",
@@ -2047,6 +2055,8 @@
       "group": "communication",
       "name": "bluetooth",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,hci-stm32wb0",
@@ -2171,6 +2181,8 @@
       "group": "communication",
       "name": "can",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-bxcan",
@@ -2295,6 +2307,8 @@
       "group": "communication",
       "name": "ethernet",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-ethernet",
@@ -2494,6 +2508,8 @@
       "group": "communication",
       "name": "i2c",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-i2c-v1",
@@ -2579,6 +2595,8 @@
       "group": "communication",
       "name": "i2s",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-i2s",
@@ -2701,6 +2719,8 @@
       "group": "communication",
       "name": "i3c",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-i3c",
@@ -2747,6 +2767,8 @@
       "group": "communication",
       "name": "ieee802154",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32wba-ieee802154",
@@ -2793,6 +2815,8 @@
       "group": "communication",
       "name": "input",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-tsc",
@@ -2839,6 +2863,8 @@
       "group": "communication",
       "name": "ipm",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-hsem-mailbox",
@@ -2924,6 +2950,8 @@
       "group": "communication",
       "name": "lora",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32wl-subghz-radio",
@@ -2971,6 +2999,8 @@
       "group": "communication",
       "name": "mbox",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,mbox-stm32-hsem",
@@ -3017,6 +3047,8 @@
       "group": "communication",
       "name": "serial",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-lpuart",
@@ -3137,6 +3169,8 @@
       "group": "communication",
       "name": "smbus",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-smbus",
@@ -3183,6 +3217,8 @@
       "group": "communication",
       "name": "spi",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-spi",
@@ -3340,6 +3376,8 @@
       "group": "communication",
       "name": "tcpc",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-ucpd",
@@ -3386,6 +3424,8 @@
       "group": "communication",
       "name": "usb",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-otgfs",
@@ -3706,6 +3746,8 @@
       "group": "memory",
       "name": "arm",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-ccm",
@@ -3750,6 +3792,8 @@
       "group": "memory",
       "name": "flash_controller",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-flash-controller",
@@ -4320,6 +4364,8 @@
       "group": "memory",
       "name": "memory-controllers",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-backup-sram",
@@ -4559,6 +4605,8 @@
       "group": "memory",
       "name": "mspi",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-xspi-controller",
@@ -4605,6 +4653,8 @@
       "group": "memory",
       "name": "mtd",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-eeprom",
@@ -4760,96 +4810,10 @@
     },
     {
       "group": "memory",
-      "name": "ospi",
-      "baseline": false,
-      "apis": [
-        {
-          "compatible": "st,stm32-ospi",
-          "title": "",
-          "binding_path": "dts/bindings/ospi/st,stm32-ospi.yaml",
-          "driver_paths": [],
-          "series_support": {
-            "stm32c0x": "absent",
-            "stm32c5x": "absent",
-            "stm32f0x": "absent",
-            "stm32f1x": "absent",
-            "stm32f2x": "absent",
-            "stm32f3x": "absent",
-            "stm32f4x": "absent",
-            "stm32f7x": "absent",
-            "stm32g0x": "absent",
-            "stm32g4x": "absent",
-            "stm32h5x": "absent",
-            "stm32h7rsx": "absent",
-            "stm32h7x": "supported",
-            "stm32l0x": "absent",
-            "stm32l1x": "absent",
-            "stm32l4x": "supported",
-            "stm32l5x": "supported",
-            "stm32mp13x": "absent",
-            "stm32mp1x": "absent",
-            "stm32mp2x": "absent",
-            "stm32n6x": "absent",
-            "stm32u0x": "absent",
-            "stm32u3x": "absent",
-            "stm32u5x": "supported",
-            "stm32wb0x": "absent",
-            "stm32wbax": "absent",
-            "stm32wbx": "absent",
-            "stm32wl3x": "absent",
-            "stm32wlx": "absent"
-          }
-        }
-      ]
-    },
-    {
-      "group": "memory",
-      "name": "qspi",
-      "baseline": false,
-      "apis": [
-        {
-          "compatible": "st,stm32-qspi",
-          "title": "",
-          "binding_path": "dts/bindings/qspi/st,stm32-qspi.yaml",
-          "driver_paths": [],
-          "series_support": {
-            "stm32c0x": "absent",
-            "stm32c5x": "absent",
-            "stm32f0x": "absent",
-            "stm32f1x": "absent",
-            "stm32f2x": "absent",
-            "stm32f3x": "absent",
-            "stm32f4x": "supported",
-            "stm32f7x": "supported",
-            "stm32g0x": "absent",
-            "stm32g4x": "supported",
-            "stm32h5x": "absent",
-            "stm32h7rsx": "absent",
-            "stm32h7x": "supported",
-            "stm32l0x": "absent",
-            "stm32l1x": "absent",
-            "stm32l4x": "supported",
-            "stm32l5x": "absent",
-            "stm32mp13x": "absent",
-            "stm32mp1x": "absent",
-            "stm32mp2x": "absent",
-            "stm32n6x": "absent",
-            "stm32u0x": "absent",
-            "stm32u3x": "absent",
-            "stm32u5x": "absent",
-            "stm32wb0x": "absent",
-            "stm32wbax": "absent",
-            "stm32wbx": "supported",
-            "stm32wl3x": "absent",
-            "stm32wlx": "absent"
-          }
-        }
-      ]
-    },
-    {
-      "group": "memory",
       "name": "sdhc",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-sdmmc",
@@ -4897,7 +4861,83 @@
       "group": "memory",
       "name": "xspi",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
+        {
+          "compatible": "st,stm32-ospi",
+          "title": "",
+          "binding_path": "dts/bindings/ospi/st,stm32-ospi.yaml",
+          "driver_paths": [],
+          "series_support": {
+            "stm32c0x": "absent",
+            "stm32c5x": "absent",
+            "stm32f0x": "absent",
+            "stm32f1x": "absent",
+            "stm32f2x": "absent",
+            "stm32f3x": "absent",
+            "stm32f4x": "absent",
+            "stm32f7x": "absent",
+            "stm32g0x": "absent",
+            "stm32g4x": "absent",
+            "stm32h5x": "absent",
+            "stm32h7rsx": "absent",
+            "stm32h7x": "supported",
+            "stm32l0x": "absent",
+            "stm32l1x": "absent",
+            "stm32l4x": "supported",
+            "stm32l5x": "supported",
+            "stm32mp13x": "absent",
+            "stm32mp1x": "absent",
+            "stm32mp2x": "absent",
+            "stm32n6x": "absent",
+            "stm32u0x": "absent",
+            "stm32u3x": "absent",
+            "stm32u5x": "supported",
+            "stm32wb0x": "absent",
+            "stm32wbax": "absent",
+            "stm32wbx": "absent",
+            "stm32wl3x": "absent",
+            "stm32wlx": "absent"
+          }
+        },
+        {
+          "compatible": "st,stm32-qspi",
+          "title": "",
+          "binding_path": "dts/bindings/qspi/st,stm32-qspi.yaml",
+          "driver_paths": [],
+          "series_support": {
+            "stm32c0x": "absent",
+            "stm32c5x": "absent",
+            "stm32f0x": "absent",
+            "stm32f1x": "absent",
+            "stm32f2x": "absent",
+            "stm32f3x": "absent",
+            "stm32f4x": "supported",
+            "stm32f7x": "supported",
+            "stm32g0x": "absent",
+            "stm32g4x": "supported",
+            "stm32h5x": "absent",
+            "stm32h7rsx": "absent",
+            "stm32h7x": "supported",
+            "stm32l0x": "absent",
+            "stm32l1x": "absent",
+            "stm32l4x": "supported",
+            "stm32l5x": "absent",
+            "stm32mp13x": "absent",
+            "stm32mp1x": "absent",
+            "stm32mp2x": "absent",
+            "stm32n6x": "absent",
+            "stm32u0x": "absent",
+            "stm32u3x": "absent",
+            "stm32u5x": "absent",
+            "stm32wb0x": "absent",
+            "stm32wbax": "absent",
+            "stm32wbx": "supported",
+            "stm32wl3x": "absent",
+            "stm32wlx": "absent"
+          }
+        },
         {
           "compatible": "st,stm32-xspi",
           "title": "",
@@ -4978,6 +5018,8 @@
       "group": "misc",
       "name": "misc",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-npu",
@@ -5096,6 +5138,8 @@
       "group": "multimedia",
       "name": "audio",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-dfsdm",
@@ -5218,6 +5262,8 @@
       "group": "multimedia",
       "name": "display",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,neochrom-gpu2d",
@@ -5338,6 +5384,8 @@
       "group": "multimedia",
       "name": "mipi-dsi",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-mipi-dsi",
@@ -5421,6 +5469,8 @@
       "group": "multimedia",
       "name": "video",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-dcmi",
@@ -5584,6 +5634,8 @@
       "group": "security",
       "name": "crc",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-crc",
@@ -5630,6 +5682,8 @@
       "group": "security",
       "name": "crypto",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-aes",
@@ -5828,6 +5882,8 @@
       "group": "security",
       "name": "otp",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-bsec",
@@ -5913,6 +5969,8 @@
       "group": "security",
       "name": "rng",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-rng",
@@ -5994,6 +6052,8 @@
       "group": "sensor",
       "name": "sensor",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-digi-temp",
@@ -6309,6 +6369,8 @@
       "group": "system",
       "name": "clock",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-clock-mco",
@@ -8468,6 +8530,8 @@
       "group": "system",
       "name": "counter",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-counter",
@@ -8514,6 +8578,8 @@
       "group": "system",
       "name": "dma",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-bdma",
@@ -8755,6 +8821,8 @@
       "group": "system",
       "name": "gpio",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-gpio",
@@ -8838,6 +8906,8 @@
       "group": "system",
       "name": "interrupt-controller",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-exti",
@@ -8995,6 +9065,8 @@
       "group": "system",
       "name": "pinctrl",
       "baseline": true,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-pinctrl",
@@ -9022,6 +9094,8 @@
       "group": "system",
       "name": "power",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-dualreg-pwr",
@@ -9436,6 +9510,8 @@
       "group": "system",
       "name": "pwm",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-pwm",
@@ -9482,6 +9558,8 @@
       "group": "system",
       "name": "regulator",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-vrefbuf",
@@ -9528,6 +9606,8 @@
       "group": "system",
       "name": "reset",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-rcc-rctl",
@@ -9574,6 +9654,8 @@
       "group": "system",
       "name": "rtc",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-rtc",
@@ -9621,6 +9703,8 @@
       "group": "system",
       "name": "timer",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-lptim",
@@ -9778,6 +9862,8 @@
       "group": "system",
       "name": "watchdog",
       "baseline": false,
+      "source": "devicetree",
+      "section": "hardware",
       "apis": [
         {
           "compatible": "st,stm32-watchdog",
@@ -9847,6 +9933,152 @@
             "stm32mp1x": "supported",
             "stm32mp2x": "supported",
             "stm32n6x": "supported",
+            "stm32u0x": "supported",
+            "stm32u3x": "supported",
+            "stm32u5x": "supported",
+            "stm32wb0x": "absent",
+            "stm32wbax": "supported",
+            "stm32wbx": "supported",
+            "stm32wl3x": "absent",
+            "stm32wlx": "supported"
+          }
+        }
+      ]
+    },
+    {
+      "group": "system",
+      "name": "pm",
+      "baseline": false,
+      "source": "devicetree",
+      "section": "software",
+      "apis": [
+        {
+          "title": "Power management (CONFIG_PM)",
+          "binding_path": "dts/bindings/power/zephyr,power-state.yaml",
+          "series_support": {
+            "stm32c0x": "supported",
+            "stm32c5x": "supported",
+            "stm32f0x": "absent",
+            "stm32f1x": "supported",
+            "stm32f2x": "absent",
+            "stm32f3x": "absent",
+            "stm32f4x": "supported",
+            "stm32f7x": "absent",
+            "stm32g0x": "supported",
+            "stm32g4x": "supported",
+            "stm32h5x": "supported",
+            "stm32h7rsx": "absent",
+            "stm32h7x": "absent",
+            "stm32l0x": "supported",
+            "stm32l1x": "supported",
+            "stm32l4x": "supported",
+            "stm32l5x": "supported",
+            "stm32mp13x": "absent",
+            "stm32mp1x": "absent",
+            "stm32mp2x": "absent",
+            "stm32n6x": "absent",
+            "stm32u0x": "supported",
+            "stm32u3x": "supported",
+            "stm32u5x": "supported",
+            "stm32wb0x": "supported",
+            "stm32wbax": "supported",
+            "stm32wbx": "supported",
+            "stm32wl3x": "absent",
+            "stm32wlx": "supported"
+          },
+          "series_states": {
+            "stm32c0x": [
+              "suspend-to-idle"
+            ],
+            "stm32c5x": [
+              "suspend-to-idle"
+            ],
+            "stm32f1x": [
+              "suspend-to-idle"
+            ],
+            "stm32f4x": [
+              "suspend-to-idle"
+            ],
+            "stm32g0x": [
+              "suspend-to-idle"
+            ],
+            "stm32g4x": [
+              "suspend-to-idle"
+            ],
+            "stm32h5x": [
+              "suspend-to-idle"
+            ],
+            "stm32l0x": [
+              "suspend-to-idle"
+            ],
+            "stm32l1x": [
+              "runtime-idle",
+              "suspend-to-idle"
+            ],
+            "stm32l4x": [
+              "suspend-to-idle"
+            ],
+            "stm32l5x": [
+              "suspend-to-idle"
+            ],
+            "stm32u0x": [
+              "suspend-to-idle"
+            ],
+            "stm32u3x": [
+              "suspend-to-idle"
+            ],
+            "stm32u5x": [
+              "suspend-to-idle"
+            ],
+            "stm32wb0x": [
+              "suspend-to-ram"
+            ],
+            "stm32wbax": [
+              "suspend-to-idle",
+              "suspend-to-ram"
+            ],
+            "stm32wbx": [
+              "suspend-to-idle"
+            ],
+            "stm32wlx": [
+              "suspend-to-idle"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "group": "system",
+      "name": "poweroff",
+      "baseline": false,
+      "source": "kconfig",
+      "section": "software",
+      "apis": [
+        {
+          "kconfig": "HAS_POWEROFF",
+          "title": "System power off (CONFIG_POWEROFF)",
+          "series_support": {
+            "stm32c0x": "supported",
+            "stm32c5x": "supported",
+            "stm32f0x": "absent",
+            "stm32f1x": "supported",
+            "stm32f2x": "absent",
+            "stm32f3x": "absent",
+            "stm32f4x": "supported",
+            "stm32f7x": "absent",
+            "stm32g0x": "supported",
+            "stm32g4x": "absent",
+            "stm32h5x": "supported",
+            "stm32h7rsx": "absent",
+            "stm32h7x": "absent",
+            "stm32l0x": "absent",
+            "stm32l1x": "supported",
+            "stm32l4x": "supported",
+            "stm32l5x": "absent",
+            "stm32mp13x": "absent",
+            "stm32mp1x": "absent",
+            "stm32mp2x": "absent",
+            "stm32n6x": "absent",
             "stm32u0x": "supported",
             "stm32u3x": "supported",
             "stm32u5x": "supported",
