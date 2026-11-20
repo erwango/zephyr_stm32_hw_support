@@ -49,7 +49,7 @@
   </section>
 
   <section>
-    <h2 class="section-heading">API coverage</h2>
+    <h2 class="section-heading">API coverage<span id="coverage-badge" class="coverage-badge hidden"></span></h2>
     <p class="note">
       Click a row (or ▸) to expand per-<code>compatible</code> detail.
       <strong>Misc</strong> = bindings not tied to a specific peripheral
@@ -59,7 +59,8 @@
       <strong>Note:</strong> on-chip vs. ported matching between STM32Cube
       (<a href="https://github.com/zephyrproject-rtos/hal_stm32" target="_blank" rel="noopener noreferrer">hal_stm32</a>)
       and Zephyr devicetree is automated via a curated IP lookup table and
-      may not be 100% accurate. Treat it as a hint, not a certified spec.
+      may not be 100% accurate. Treat it as a hint, not a certified spec;
+      the "Ported %" figures are derived from the same matching.
     </p>
     <div id="table-container"></div>
   </section>

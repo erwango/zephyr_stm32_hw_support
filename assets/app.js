@@ -121,11 +121,73 @@ function normalizeStatus(status) {
 // confirmed absent from the silicon entirely.
 const STATUS_PRIORITY = ["supported", "not_ported", "not_available", "absent"];
 
-function aggregateStatus(apis, seriesName) {
-  const statuses = new Set(
-    apis.map((api) => normalizeStatus((api.series_support || {})[seriesName] || "absent"))
-  );
+function rawAggregateStatus(apis, seriesName) {
+  const statuses = new Set(apis.map((api) => (api.series_support || {})[seriesName] || "absent"));
   return STATUS_PRIORITY.find((status) => statuses.has(status)) || "absent";
+}
+
+function aggregateStatus(apis, seriesName) {
+  return normalizeStatus(rawAggregateStatus(apis, seriesName));
+}
+
+// Coverage % = supported / (supported + not_ported): of the series
+// STM32Cube confirms the silicon has (already ported, or on-chip but not
+// yet ported), what fraction is actually ported. null when that total is
+// zero (nothing on-chip to port, or no hal_stm32 classification at all).
+function coverageRatio(supported, notPorted) {
+  const denom = supported + notPorted;
+  return denom > 0 ? Math.round((100 * supported) / denom) : null;
+}
+
+function formatCoverage(pct) {
+  return pct === null ? "\u2013" : `${pct}%`;
+}
+
+// Hardware categories only, full dataset (ignores the search filter),
+// independent of the silicon-detail toggle (uses rawAggregateStatus).
+function computeCoverageStats(report) {
+  const seriesNames = report.series.map((s) => s.name);
+  const bySeriesCounts = new Map(seriesNames.map((s) => [s, { supported: 0, notPorted: 0 }]));
+  const byCategory = new Map();
+  let globalSupported = 0;
+  let globalNotPorted = 0;
+
+  for (const category of report.categories) {
+    if (category.baseline || (category.section || "hardware") !== "hardware") continue;
+    let supported = 0;
+    let notPorted = 0;
+    for (const s of seriesNames) {
+      const status = rawAggregateStatus(category.apis, s);
+      if (status === "supported") {
+        supported += 1;
+        bySeriesCounts.get(s).supported += 1;
+      } else if (status === "not_ported") {
+        notPorted += 1;
+        bySeriesCounts.get(s).notPorted += 1;
+      }
+    }
+    byCategory.set(`${category.group}/${category.name}`, coverageRatio(supported, notPorted));
+    globalSupported += supported;
+    globalNotPorted += notPorted;
+  }
+
+  const bySeries = new Map();
+  for (const [s, counts] of bySeriesCounts) {
+    bySeries.set(s, coverageRatio(counts.supported, counts.notPorted));
+  }
+
+  return { byCategory, bySeries, global: coverageRatio(globalSupported, globalNotPorted) };
+}
+
+function updateCoverageBadge(stats) {
+  const badge = document.getElementById("coverage-badge");
+  if (!stats) {
+    badge.classList.add("hidden");
+    return;
+  }
+  badge.textContent = `${formatCoverage(stats.global)} ported`;
+  badge.title = "Ported / (ported + on-chip, not ported) across all hardware categories and series";
+  badge.classList.remove("hidden");
 }
 
 function matchesFilter(category, api, needle) {
@@ -241,7 +303,7 @@ function renderSeriesTable(report) {
 // API coverage table (one row per category, expandable to per-compatible)
 // ---------------------------------------------------------------------
 
-function buildCategoryRow(ref, series, category, apis, expanded) {
+function buildCategoryRow(ref, series, category, apis, expanded, coveragePct) {
   const tr = document.createElement("tr");
   tr.className = `category-row group-${category.group}`;
   tr.addEventListener("click", () => {
@@ -279,6 +341,14 @@ function buildCategoryRow(ref, series, category, apis, expanded) {
     td.textContent = cellLabel(status);
     tr.appendChild(td);
   }
+
+  if (state.showSilicon) {
+    const covCell = document.createElement("td");
+    covCell.className = "col-coverage";
+    covCell.textContent = formatCoverage(coveragePct);
+    covCell.title = "Ported / (ported + on-chip, not ported)";
+    tr.appendChild(covCell);
+  }
   return tr;
 }
 
@@ -290,8 +360,34 @@ function buildSectionSeparatorRow(seriesCount) {
   const tr = document.createElement("tr");
   tr.className = "section-separator-row";
   const td = document.createElement("td");
-  td.colSpan = seriesCount + 3;
+  td.colSpan = seriesCount + 3 + (state.showSilicon ? 1 : 0);
   tr.appendChild(td);
+  return tr;
+}
+
+// Grand-totals row: per-series ported/(ported+not_ported) %, with the
+// overall global % repeated in the trailing corner cell.
+function buildCoverageTotalsRow(series, stats) {
+  const tr = document.createElement("tr");
+  tr.className = "coverage-totals-row";
+
+  const labelCell = document.createElement("td");
+  labelCell.colSpan = 3;
+  labelCell.textContent = "Ported / on-chip coverage";
+  tr.appendChild(labelCell);
+
+  for (const s of series) {
+    const td = document.createElement("td");
+    td.className = "col-coverage";
+    td.textContent = formatCoverage(stats.bySeries.get(s));
+    tr.appendChild(td);
+  }
+
+  const globalCell = document.createElement("td");
+  globalCell.className = "col-coverage";
+  globalCell.textContent = formatCoverage(stats.global);
+  tr.appendChild(globalCell);
+
   return tr;
 }
 
@@ -337,7 +433,12 @@ function buildApiDetailRow(ref, series, category, api) {
   tr.appendChild(nameCell);
 
   for (const s of series) {
-    const status = normalizeStatus((api.series_support && api.series_support[s]) || "absent");
+    // The hal_stm32 IP catalog maps tokens per category, not per individual
+    // compatible, so attributing not_ported/not_available to one specific
+    // compatible would overstate precision the backend doesn't have.
+    // That detail is only shown aggregated at the category-row level.
+    const rawStatus = (api.series_support && api.series_support[s]) || "absent";
+    const status = rawStatus === "supported" ? "supported" : "absent";
     const td = document.createElement("td");
     td.className = cellClass(status);
     td.textContent = cellLabel(status);
@@ -347,12 +448,11 @@ function buildApiDetailRow(ref, series, category, api) {
       } else if (api.series_states && api.series_states[s]) {
         td.title = `Power states: ${api.series_states[s].join(", ")}`;
       }
-    } else if (status === "not_ported") {
-      td.title = "On-chip per STM32Cube, no Zephyr binding/driver upstream yet.";
-    } else if (status === "not_available") {
-      td.title = "Not present on this series' silicon, per STM32Cube.";
     }
     tr.appendChild(td);
+  }
+  if (state.showSilicon) {
+    tr.appendChild(document.createElement("td")); // coverage % (blank, category-level only)
   }
   return tr;
 }
@@ -379,12 +479,22 @@ function renderTable(report, filter) {
     th.title = s;
     headRow.appendChild(th);
   }
+  if (state.showSilicon) {
+    const th = document.createElement("th");
+    th.textContent = "Ported %";
+    th.className = "col-header-text";
+    th.title = "Ported / (ported + on-chip, not ported); hardware categories only";
+    headRow.appendChild(th);
+  }
   thead.appendChild(headRow);
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
   let categoryCount = 0;
   let lastSection = null;
+  const stats = state.showSilicon ? computeCoverageStats(report) : null;
+  updateCoverageBadge(stats);
+  let coverageRowInserted = false;
   for (const category of report.categories) {
     if (category.baseline) continue; // metadata only, no coverage grid
 
@@ -394,6 +504,10 @@ function renderTable(report, filter) {
 
     const section = category.section || "hardware";
     if (lastSection !== null && section !== lastSection) {
+      if (stats && !coverageRowInserted) {
+        tbody.appendChild(buildCoverageTotalsRow(series, stats));
+        coverageRowInserted = true;
+      }
       tbody.appendChild(buildSectionSeparatorRow(series.length));
     }
     lastSection = section;
@@ -401,12 +515,17 @@ function renderTable(report, filter) {
     const key = `${category.group}/${category.name}`;
     const expanded = needle !== "" || state.expandedCategories.has(key);
 
-    tbody.appendChild(buildCategoryRow(report.ref, series, category, apis, expanded));
+    tbody.appendChild(
+      buildCategoryRow(report.ref, series, category, apis, expanded, stats ? stats.byCategory.get(key) : undefined)
+    );
     if (expanded) {
       for (const api of apis) {
         tbody.appendChild(buildApiDetailRow(report.ref, series, category, api));
       }
     }
+  }
+  if (stats && !coverageRowInserted) {
+    tbody.appendChild(buildCoverageTotalsRow(series, stats));
   }
   table.appendChild(tbody);
 

@@ -134,6 +134,15 @@ h1 {
   padding-left: 0.5rem;
 }
 
+.coverage-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #57606a;
+  margin-left: 0.5rem;
+}
+
 .note {
   font-size: 0.72rem;
   color: #666;
@@ -338,6 +347,22 @@ tbody td {
   background: var(--brand-light-blue);
 }
 
+.coverage-totals-row {
+  font-weight: 700;
+  background: var(--brand-light-blue);
+  border-top: 2px solid var(--brand-blue);
+}
+
+.coverage-totals-row td:first-child {
+  color: var(--brand-blue);
+}
+
+.col-coverage {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 0.6rem;
+}
+
 .detail-row td {
   background: #fff;
 }
@@ -414,6 +439,16 @@ footer {
   }
   .category-row:hover {
     background: #1c2128;
+  }
+  .coverage-totals-row {
+    background: #1c2128;
+    border-top-color: var(--brand-yellow);
+  }
+  .coverage-totals-row td:first-child {
+    color: var(--brand-yellow);
+  }
+  .coverage-badge {
+    color: #8b949e;
   }
   .detail-row td {
     background: #0d1117;
