@@ -79,6 +79,13 @@ jobs:
                    "https://github.com/zephyrproject-rtos/zephyr", clone_dir],
                   check=True,
               )
+              # Releases older than the current soc/st/stm32/soc.yml-based SoC
+              # catalog (e.g. v1.x) predate anything scan_zephyr.py can parse;
+              # skip them instead of letting one unscannable tag abort every
+              # other (actually new) release in this batch.
+              if not (Path(clone_dir) / "soc" / "st" / "stm32" / "soc.yml").is_file():
+                  print(f"skipping {ref}: no soc/st/stm32/soc.yml (pre-dates current SoC catalog)")
+                  continue
               subprocess.run(
                   ["python3", "scripts/scan_zephyr.py",
                    "--zephyr-path", clone_dir, "--ref", ref,
