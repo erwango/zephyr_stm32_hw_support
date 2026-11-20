@@ -267,6 +267,27 @@ tbody td {
 .group-badge-misc { background: #57606a; }
 .group-badge-other { background: var(--brand-grey); }
 
+.source-badge {
+  display: inline-block;
+  margin-right: 0.4rem;
+  padding: 0.04rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #57606a;
+  border: 1px solid var(--border);
+  cursor: help;
+}
+
+.section-separator-row td {
+  height: 0.9rem;
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+
 .category-row {
   cursor: pointer;
   font-weight: 600;

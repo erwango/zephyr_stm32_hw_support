@@ -63,6 +63,15 @@ function bindingDocUrl(ref, bindingPath) {
   return `${ZEPHYR_DOCS_BASE}${docVersion(ref)}/build/dts/api/bindings/${htmlPath}`;
 }
 
+// Kconfig-sourced capabilities (e.g. HAS_POWEROFF) are the hidden SoC-side
+// half of a user-facing `select`ed/`depends on` pair (HAS_POWEROFF ->
+// POWEROFF, HAS_PM -> PM); link to the user-facing CONFIG_* symbol's doc
+// anchor since that's the one a reader would actually enable.
+function kconfigDocUrl(ref, symbol) {
+  const userSymbol = symbol.replace(/^HAS_/, "");
+  return `${ZEPHYR_DOCS_BASE}${docVersion(ref)}/kconfig.html#CONFIG_${userSymbol}`;
+}
+
 function link(href, text, title) {
   const a = document.createElement("a");
   a.href = href;
@@ -90,7 +99,7 @@ function aggregateStatus(apis, seriesName) {
 function matchesFilter(category, api, needle) {
   if (!needle) return true;
   return (
-    api.compatible.toLowerCase().includes(needle) ||
+    (api.compatible || api.kconfig || "").toLowerCase().includes(needle) ||
     (api.title || "").toLowerCase().includes(needle) ||
     category.name.toLowerCase().includes(needle) ||
     category.group.toLowerCase().includes(needle)
@@ -228,7 +237,7 @@ function buildCategoryRow(ref, series, category, apis, expanded) {
 
   const nameCell = document.createElement("td");
   nameCell.className = "api-name";
-  nameCell.textContent = `${apis.length} compatible${apis.length === 1 ? "" : "s"}`;
+  nameCell.textContent = apiCountLabel(category, apis);
   tr.appendChild(nameCell);
 
   for (const s of series) {
@@ -241,7 +250,27 @@ function buildCategoryRow(ref, series, category, apis, expanded) {
   return tr;
 }
 
-function buildApiDetailRow(ref, series, api) {
+// Blank spacer row marking the boundary between the hardware peripheral
+// categories (devicetree-backed; "absent" means not present on the
+// silicon) and the software capability categories (Kconfig/PM; "absent"
+// means not yet implemented in Zephyr for this series).
+function buildSectionSeparatorRow(seriesCount) {
+  const tr = document.createElement("tr");
+  tr.className = "section-separator-row";
+  const td = document.createElement("td");
+  td.colSpan = seriesCount + 3;
+  tr.appendChild(td);
+  return tr;
+}
+
+function apiCountLabel(category, apis) {
+  if (category.source === "kconfig") {
+    return `${apis.length} Kconfig option${apis.length === 1 ? "" : "s"}`;
+  }
+  return `${apis.length} compatible${apis.length === 1 ? "" : "s"}`;
+}
+
+function buildApiDetailRow(ref, series, category, api) {
   const tr = document.createElement("tr");
   tr.className = "detail-row api-detail-row";
 
@@ -250,16 +279,29 @@ function buildApiDetailRow(ref, series, api) {
 
   const nameCell = document.createElement("td");
   nameCell.className = "api-name api-name-indent";
-  nameCell.appendChild(
-    link(bindingDocUrl(ref, api.binding_path), api.title || api.compatible, "Zephyr devicetree binding doc")
-  );
-  const compatLink = link(
-    `${GITHUB_BLOB_BASE}${encodeURIComponent(ref)}/${api.binding_path}`,
-    api.compatible,
-    "Binding source on GitHub"
-  );
-  compatLink.className = "api-compat";
-  nameCell.appendChild(compatLink);
+
+  if (category.source === "kconfig") {
+    const badge = document.createElement("span");
+    badge.className = "source-badge source-badge-kconfig";
+    badge.textContent = "Kconfig";
+    badge.title =
+      "Kconfig-gated capability: 'absent' means not yet implemented in Zephyr for this series, not a hardware limitation.";
+    nameCell.appendChild(badge);
+    nameCell.appendChild(link(kconfigDocUrl(ref, api.kconfig), api.title || api.kconfig, "Zephyr Kconfig reference"));
+  } else {
+    nameCell.appendChild(
+      link(bindingDocUrl(ref, api.binding_path), api.title || api.compatible, "Zephyr devicetree binding doc")
+    );
+    if (api.compatible) {
+      const compatLink = link(
+        `${GITHUB_BLOB_BASE}${encodeURIComponent(ref)}/${api.binding_path}`,
+        api.compatible,
+        "Binding source on GitHub"
+      );
+      compatLink.className = "api-compat";
+      nameCell.appendChild(compatLink);
+    }
+  }
   tr.appendChild(nameCell);
 
   for (const s of series) {
@@ -267,8 +309,12 @@ function buildApiDetailRow(ref, series, api) {
     const td = document.createElement("td");
     td.className = cellClass(status);
     td.textContent = cellLabel(status);
-    if (status === "supported" && api.driver_paths && api.driver_paths.length) {
-      td.title = api.driver_paths.join("\n");
+    if (status === "supported") {
+      if (api.driver_paths && api.driver_paths.length) {
+        td.title = api.driver_paths.join("\n");
+      } else if (api.series_states && api.series_states[s]) {
+        td.title = `Power states: ${api.series_states[s].join(", ")}`;
+      }
     }
     tr.appendChild(td);
   }
@@ -302,6 +348,7 @@ function renderTable(report, filter) {
 
   const tbody = document.createElement("tbody");
   let categoryCount = 0;
+  let lastSection = null;
   for (const category of report.categories) {
     if (category.baseline) continue; // metadata only, no coverage grid
 
@@ -309,13 +356,19 @@ function renderTable(report, filter) {
     if (apis.length === 0) continue;
     categoryCount += 1;
 
+    const section = category.section || "hardware";
+    if (lastSection !== null && section !== lastSection) {
+      tbody.appendChild(buildSectionSeparatorRow(series.length));
+    }
+    lastSection = section;
+
     const key = `${category.group}/${category.name}`;
     const expanded = needle !== "" || state.expandedCategories.has(key);
 
     tbody.appendChild(buildCategoryRow(report.ref, series, category, apis, expanded));
     if (expanded) {
       for (const api of apis) {
-        tbody.appendChild(buildApiDetailRow(report.ref, series, api));
+        tbody.appendChild(buildApiDetailRow(report.ref, series, category, api));
       }
     }
   }
