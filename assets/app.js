@@ -151,11 +151,12 @@ function renderSeriesTable(report) {
     const expandedHere = [];
     for (const s of series) {
       const td = document.createElement("td");
-      if (s.cores.includes(core)) {
+      const socsWithCore = s.socs.filter((soc) => soc.cores.includes(core));
+      if (socsWithCore.length > 0) {
         const key = `${core}::${s.name}`;
         const expanded = state.expandedSeries.has(key);
         td.className = "series-cell" + (expanded ? " series-cell-expanded" : "");
-        td.textContent = String(s.socs.length);
+        td.textContent = String(socsWithCore.length);
         td.title = `${s.name}: click to ${expanded ? "hide" : "show"} SoC list`;
         td.addEventListener("click", () => {
           if (state.expandedSeries.has(key)) {
@@ -165,7 +166,7 @@ function renderSeriesTable(report) {
           }
           renderSeriesTable(report);
         });
-        if (expanded) expandedHere.push(s);
+        if (expanded) expandedHere.push({ series: s, socs: socsWithCore });
       } else {
         td.className = "cell-absent";
         td.textContent = "\u2013";
@@ -174,7 +175,7 @@ function renderSeriesTable(report) {
     }
     tbody.appendChild(row);
 
-    for (const s of expandedHere) {
+    for (const { series: s, socs } of expandedHere) {
       const detailRow = document.createElement("tr");
       detailRow.className = "detail-row";
       const td = document.createElement("td");
@@ -182,11 +183,12 @@ function renderSeriesTable(report) {
       const label = document.createElement("strong");
       label.textContent = `${s.name}: `;
       td.appendChild(label);
-      td.appendChild(document.createTextNode(s.socs.join(", ")));
+      td.appendChild(document.createTextNode(socs.map((soc) => soc.name).join(", ")));
       detailRow.appendChild(td);
       tbody.appendChild(detailRow);
     }
   }
+
   table.appendChild(tbody);
 
   wrapper.appendChild(table);

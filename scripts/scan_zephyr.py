@@ -156,6 +156,17 @@ def extract_compatibles(text: str) -> list[str]:
     return out
 
 
+# soc.yml's `cpuclusters` entries use short core identifiers (e.g. "m7",
+# "m4") that don't always match the devicetree's `arm,cortex-<core>` naming
+# (e.g. the dualcore H7 companion core is declared in dts as "m4f", with an
+# FPU suffix, not "m4"). This maps the known exceptions.
+CPU_CLUSTER_CORE_ALIASES = {"m4": "m4f"}
+
+
+def normalize_cpucluster_core(name: str) -> str:
+    return CPU_CLUSTER_CORE_ALIASES.get(name, name)
+
+
 def run_git(args: list[str], cwd: Path) -> str:
     result = subprocess.run(
         ["git", "-C", str(cwd), *args],
@@ -199,10 +210,21 @@ def load_series_catalog(zephyr_root: Path) -> list[dict]:
     soc_yml = zephyr_root / "soc" / "st" / "stm32" / "soc.yml"
     data = yaml.safe_load(soc_yml.read_text())
     stm32_family = next(f for f in data.get("family", []) if f.get("name") == "stm32")
-    return [
-        {"name": s["name"], "socs": [soc["name"] for soc in s.get("socs", [])]}
-        for s in stm32_family.get("series", [])
-    ]
+    series = []
+    for s in stm32_family.get("series", []):
+        socs = []
+        for soc in s.get("socs", []):
+            # Most SoCs have a single, implicit core shared by the whole
+            # series (determined later from devicetree). Some SoCs are
+            # heterogeneous multi-core parts (e.g. only 4 of the 19 H7x
+            # SoCs are dual-core M7+M4F) and declare their exact cores
+            # explicitly via `cpuclusters` -- this is the authoritative,
+            # per-SoC source of truth for that case.
+            clusters = soc.get("cpuclusters") or []
+            cores = [normalize_cpucluster_core(c["name"]) for c in clusters]
+            socs.append({"name": soc["name"], "cores": cores})
+        series.append({"name": s["name"], "socs": socs})
+    return series
 
 
 def scan_series_dts(zephyr_root: Path, dts_dir: str) -> tuple[set[str], set[str]]:
@@ -278,9 +300,26 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
     declared_by_series: dict[str, set[str]] = {}
     for entry in series_catalog:
         name = entry["name"]
-        compatibles, cores = scan_series_dts(zephyr_root, dts_dir_for_series(name))
+        compatibles, scanned_cores = scan_series_dts(zephyr_root, dts_dir_for_series(name))
         declared_by_series[name] = compatibles
-        series_out.append({"name": name, "cores": sorted(cores), "socs": entry["socs"]})
+
+        # Series-wide dtsi scanning can't tell which specific SoCs have
+        # which core when a series mixes single- and multi-core parts
+        # (e.g. stm32h7x: only 4 of 19 SoCs are dual-core M7+M4F). Where
+        # soc.yml's per-SoC `cpuclusters` is explicit, trust it. Any core
+        # beyond the first in a `cpuclusters` list is treated as exclusive
+        # to the SoCs that declare it; SoCs without an explicit
+        # `cpuclusters` fall back to the series' remaining ("default")
+        # cores.
+        explicit_core_lists = [soc["cores"] for soc in entry["socs"] if soc["cores"]]
+        exclusive_cores = {c for cores in explicit_core_lists for c in cores[1:]}
+        default_cores = sorted(scanned_cores - exclusive_cores)
+
+        socs_out = [
+            {"name": soc["name"], "cores": soc["cores"] or default_cores}
+            for soc in entry["socs"]
+        ]
+        series_out.append({"name": name, "cores": sorted(scanned_cores), "socs": socs_out})
     series_out.sort(key=lambda s: s["name"])
 
     driver_index = build_driver_index(zephyr_root)

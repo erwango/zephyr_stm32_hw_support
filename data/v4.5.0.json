@@ -1,7 +1,7 @@
 {
   "ref": "v4.5.0",
   "zephyr_commit": "41d10b59730406bbab4ca9f1fbbe9e96aafb4966",
-  "generated_at": "2026-11-20T14:36:14Z",
+  "generated_at": "2026-11-20T14:37:33Z",
   "series": [
     {
       "name": "stm32c0x",
@@ -9,12 +9,42 @@
         "m0+"
       ],
       "socs": [
-        "stm32c011xx",
-        "stm32c031xx",
-        "stm32c051xx",
-        "stm32c071xx",
-        "stm32c091xx",
-        "stm32c092xx"
+        {
+          "name": "stm32c011xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32c031xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32c051xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32c071xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32c091xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32c092xx",
+          "cores": [
+            "m0+"
+          ]
+        }
       ]
     },
     {
@@ -23,15 +53,60 @@
         "m33"
       ],
       "socs": [
-        "stm32c531xx",
-        "stm32c532xx",
-        "stm32c542xx",
-        "stm32c551xx",
-        "stm32c552xx",
-        "stm32c562xx",
-        "stm32c591xx",
-        "stm32c593xx",
-        "stm32c5a3xx"
+        {
+          "name": "stm32c531xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c532xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c542xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c551xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c552xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c562xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c591xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c593xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32c5a3xx",
+          "cores": [
+            "m33"
+          ]
+        }
       ]
     },
     {
@@ -40,18 +115,78 @@
         "m0"
       ],
       "socs": [
-        "stm32f030x4",
-        "stm32f030x6",
-        "stm32f030x8",
-        "stm32f030xc",
-        "stm32f031x6",
-        "stm32f042x6",
-        "stm32f051x8",
-        "stm32f070xb",
-        "stm32f072x8",
-        "stm32f072xb",
-        "stm32f091xc",
-        "stm32f098xx"
+        {
+          "name": "stm32f030x4",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f030x6",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f030x8",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f030xc",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f031x6",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f042x6",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f051x8",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f070xb",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f072x8",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f072xb",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f091xc",
+          "cores": [
+            "m0"
+          ]
+        },
+        {
+          "name": "stm32f098xx",
+          "cores": [
+            "m0"
+          ]
+        }
       ]
     },
     {
@@ -60,14 +195,54 @@
         "m3"
       ],
       "socs": [
-        "stm32f100xb",
-        "stm32f100xe",
-        "stm32f103x8",
-        "stm32f103xb",
-        "stm32f103xe",
-        "stm32f105xb",
-        "stm32f105xc",
-        "stm32f107xc"
+        {
+          "name": "stm32f100xb",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f100xe",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f103x8",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f103xb",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f103xe",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f105xb",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f105xc",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f107xc",
+          "cores": [
+            "m3"
+          ]
+        }
       ]
     },
     {
@@ -76,8 +251,18 @@
         "m3"
       ],
       "socs": [
-        "stm32f205xx",
-        "stm32f207xx"
+        {
+          "name": "stm32f205xx",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32f207xx",
+          "cores": [
+            "m3"
+          ]
+        }
       ]
     },
     {
@@ -86,14 +271,54 @@
         "m4f"
       ],
       "socs": [
-        "stm32f302x8",
-        "stm32f302xc",
-        "stm32f303x8",
-        "stm32f303xb",
-        "stm32f303xc",
-        "stm32f303xe",
-        "stm32f334x8",
-        "stm32f373xc"
+        {
+          "name": "stm32f302x8",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f302xc",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f303x8",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f303xb",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f303xc",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f303xe",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f334x8",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f373xc",
+          "cores": [
+            "m4f"
+          ]
+        }
       ]
     },
     {
@@ -102,29 +327,144 @@
         "m4f"
       ],
       "socs": [
-        "stm32f401xb",
-        "stm32f401xc",
-        "stm32f401xd",
-        "stm32f401xe",
-        "stm32f405xx",
-        "stm32f407xx",
-        "stm32f410rx",
-        "stm32f411xe",
-        "stm32f412cx",
-        "stm32f412rx",
-        "stm32f412vx",
-        "stm32f412zx",
-        "stm32f413xx",
-        "stm32f415xx",
-        "stm32f417xx",
-        "stm32f423xx",
-        "stm32f427xx",
-        "stm32f429xx",
-        "stm32f437xx",
-        "stm32f439xx",
-        "stm32f446xx",
-        "stm32f469xx",
-        "stm32f479xx"
+        {
+          "name": "stm32f401xb",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f401xc",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f401xd",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f401xe",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f405xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f407xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f410rx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f411xe",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f412cx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f412rx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f412vx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f412zx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f413xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f415xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f417xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f423xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f427xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f429xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f437xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f439xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f446xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f469xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32f479xx",
+          "cores": [
+            "m4f"
+          ]
+        }
       ]
     },
     {
@@ -133,17 +473,72 @@
         "m7"
       ],
       "socs": [
-        "stm32f722xx",
-        "stm32f723xx",
-        "stm32f730xx",
-        "stm32f745xx",
-        "stm32f746xx",
-        "stm32f750xx",
-        "stm32f756xx",
-        "stm32f765xx",
-        "stm32f767xx",
-        "stm32f769xx",
-        "stm32f777xx"
+        {
+          "name": "stm32f722xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f723xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f730xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f745xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f746xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f750xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f756xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f765xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f767xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f769xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32f777xx",
+          "cores": [
+            "m7"
+          ]
+        }
       ]
     },
     {
@@ -152,18 +547,78 @@
         "m0+"
       ],
       "socs": [
-        "stm32g030xx",
-        "stm32g031xx",
-        "stm32g041xx",
-        "stm32g050xx",
-        "stm32g051xx",
-        "stm32g061xx",
-        "stm32g070xx",
-        "stm32g071xx",
-        "stm32g081xx",
-        "stm32g0b0xx",
-        "stm32g0b1xx",
-        "stm32g0c1xx"
+        {
+          "name": "stm32g030xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g031xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g041xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g050xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g051xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g061xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g070xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g071xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g081xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g0b0xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g0b1xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32g0c1xx",
+          "cores": [
+            "m0+"
+          ]
+        }
       ]
     },
     {
@@ -172,14 +627,54 @@
         "m4f"
       ],
       "socs": [
-        "stm32g431xx",
-        "stm32g441xx",
-        "stm32g473xx",
-        "stm32g474xx",
-        "stm32g483xx",
-        "stm32g484xx",
-        "stm32g491xx",
-        "stm32g4a1xx"
+        {
+          "name": "stm32g431xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32g441xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32g473xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32g474xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32g483xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32g484xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32g491xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32g4a1xx",
+          "cores": [
+            "m4f"
+          ]
+        }
       ]
     },
     {
@@ -188,16 +683,66 @@
         "m33"
       ],
       "socs": [
-        "stm32h503xx",
-        "stm32h523xx",
-        "stm32h533xx",
-        "stm32h562xx",
-        "stm32h563xx",
-        "stm32h573xx",
-        "stm32h5e4xx",
-        "stm32h5e5xx",
-        "stm32h5f4xx",
-        "stm32h5f5xx"
+        {
+          "name": "stm32h503xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h523xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h533xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h562xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h563xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h573xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h5e4xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h5e5xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h5f4xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32h5f5xx",
+          "cores": [
+            "m33"
+          ]
+        }
       ]
     },
     {
@@ -206,10 +751,30 @@
         "m7"
       ],
       "socs": [
-        "stm32h7r3xx",
-        "stm32h7r7xx",
-        "stm32h7s3xx",
-        "stm32h7s7xx"
+        {
+          "name": "stm32h7r3xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7r7xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7s3xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7s7xx",
+          "cores": [
+            "m7"
+          ]
+        }
       ]
     },
     {
@@ -219,25 +784,124 @@
         "m7"
       ],
       "socs": [
-        "stm32h7a3xx",
-        "stm32h7a3xxq",
-        "stm32h7b0xx",
-        "stm32h7b0xxq",
-        "stm32h7b3xx",
-        "stm32h7b3xxq",
-        "stm32h723xx",
-        "stm32h725xx",
-        "stm32h730xx",
-        "stm32h730xxq",
-        "stm32h735xx",
-        "stm32h742xx",
-        "stm32h743xx",
-        "stm32h745xx",
-        "stm32h747xx",
-        "stm32h750xx",
-        "stm32h753xx",
-        "stm32h755xx",
-        "stm32h757xx"
+        {
+          "name": "stm32h7a3xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7a3xxq",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7b0xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7b0xxq",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7b3xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h7b3xxq",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h723xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h725xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h730xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h730xxq",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h735xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h742xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h743xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h745xx",
+          "cores": [
+            "m7",
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32h747xx",
+          "cores": [
+            "m7",
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32h750xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h753xx",
+          "cores": [
+            "m7"
+          ]
+        },
+        {
+          "name": "stm32h755xx",
+          "cores": [
+            "m7",
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32h757xx",
+          "cores": [
+            "m7",
+            "m4f"
+          ]
+        }
       ]
     },
     {
@@ -246,19 +910,84 @@
         "m0+"
       ],
       "socs": [
-        "stm32l010x4",
-        "stm32l010x6",
-        "stm32l010x8",
-        "stm32l010xb",
-        "stm32l011xx",
-        "stm32l031xx",
-        "stm32l051xx",
-        "stm32l053xx",
-        "stm32l071xx",
-        "stm32l072xx",
-        "stm32l073xx",
-        "stm32l081xx",
-        "stm32l083xx"
+        {
+          "name": "stm32l010x4",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l010x6",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l010x8",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l010xb",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l011xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l031xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l051xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l053xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l071xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l072xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l073xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l081xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32l083xx",
+          "cores": [
+            "m0+"
+          ]
+        }
       ]
     },
     {
@@ -267,13 +996,48 @@
         "m3"
       ],
       "socs": [
-        "stm32l100xb",
-        "stm32l151xb",
-        "stm32l151xba",
-        "stm32l151xc",
-        "stm32l151xe",
-        "stm32l152xc",
-        "stm32l152xe"
+        {
+          "name": "stm32l100xb",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32l151xb",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32l151xba",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32l151xc",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32l151xe",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32l152xc",
+          "cores": [
+            "m3"
+          ]
+        },
+        {
+          "name": "stm32l152xe",
+          "cores": [
+            "m3"
+          ]
+        }
       ]
     },
     {
@@ -282,25 +1046,120 @@
         "m4f"
       ],
       "socs": [
-        "stm32l412xx",
-        "stm32l422xx",
-        "stm32l431xx",
-        "stm32l432xx",
-        "stm32l433xx",
-        "stm32l451xx",
-        "stm32l452xx",
-        "stm32l462xx",
-        "stm32l471xx",
-        "stm32l475xx",
-        "stm32l476xx",
-        "stm32l486xx",
-        "stm32l496xx",
-        "stm32l4a6xx",
-        "stm32l4p5xx",
-        "stm32l4q5xx",
-        "stm32l4s5xx",
-        "stm32l4r5xx",
-        "stm32l4r9xx"
+        {
+          "name": "stm32l412xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l422xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l431xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l432xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l433xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l451xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l452xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l462xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l471xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l475xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l476xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l486xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l496xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l4a6xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l4p5xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l4q5xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l4s5xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l4r5xx",
+          "cores": [
+            "m4f"
+          ]
+        },
+        {
+          "name": "stm32l4r9xx",
+          "cores": [
+            "m4f"
+          ]
+        }
       ]
     },
     {
@@ -309,8 +1168,18 @@
         "m33"
       ],
       "socs": [
-        "stm32l552xx",
-        "stm32l562xx"
+        {
+          "name": "stm32l552xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32l562xx",
+          "cores": [
+            "m33"
+          ]
+        }
       ]
     },
     {
@@ -319,18 +1188,78 @@
         "a7"
       ],
       "socs": [
-        "stm32mp131axx",
-        "stm32mp131cxx",
-        "stm32mp131dxx",
-        "stm32mp131fxx",
-        "stm32mp133axx",
-        "stm32mp133cxx",
-        "stm32mp133dxx",
-        "stm32mp133fxx",
-        "stm32mp135axx",
-        "stm32mp135cxx",
-        "stm32mp135dxx",
-        "stm32mp135fxx"
+        {
+          "name": "stm32mp131axx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp131cxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp131dxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp131fxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp133axx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp133cxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp133dxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp133fxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp135axx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp135cxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp135dxx",
+          "cores": [
+            "a7"
+          ]
+        },
+        {
+          "name": "stm32mp135fxx",
+          "cores": [
+            "a7"
+          ]
+        }
       ]
     },
     {
@@ -339,8 +1268,18 @@
         "m4"
       ],
       "socs": [
-        "stm32mp157cxx",
-        "stm32mp157fxx"
+        {
+          "name": "stm32mp157cxx",
+          "cores": [
+            "m4"
+          ]
+        },
+        {
+          "name": "stm32mp157fxx",
+          "cores": [
+            "m4"
+          ]
+        }
       ]
     },
     {
@@ -349,9 +1288,24 @@
         "m33"
       ],
       "socs": [
-        "stm32mp215fxx",
-        "stm32mp255cxx",
-        "stm32mp257fxx"
+        {
+          "name": "stm32mp215fxx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32mp255cxx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32mp257fxx",
+          "cores": [
+            "m33"
+          ]
+        }
       ]
     },
     {
@@ -360,7 +1314,12 @@
         "m55"
       ],
       "socs": [
-        "stm32n657xx"
+        {
+          "name": "stm32n657xx",
+          "cores": [
+            "m55"
+          ]
+        }
       ]
     },
     {
@@ -369,9 +1328,24 @@
         "m0+"
       ],
       "socs": [
-        "stm32u031xx",
-        "stm32u073xx",
-        "stm32u083xx"
+        {
+          "name": "stm32u031xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32u073xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32u083xx",
+          "cores": [
+            "m0+"
+          ]
+        }
       ]
     },
     {
@@ -380,9 +1354,24 @@
         "m33"
       ],
       "socs": [
-        "stm32u375xx",
-        "stm32u385xx",
-        "stm32u3c5xx"
+        {
+          "name": "stm32u375xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u385xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u3c5xx",
+          "cores": [
+            "m33"
+          ]
+        }
       ]
     },
     {
@@ -391,18 +1380,78 @@
         "m33"
       ],
       "socs": [
-        "stm32u5a5xx",
-        "stm32u5a9xx",
-        "stm32u5f7xx",
-        "stm32u5f9xx",
-        "stm32u5g7xx",
-        "stm32u5g9xx",
-        "stm32u535xx",
-        "stm32u545xx",
-        "stm32u575xx",
-        "stm32u585xx",
-        "stm32u595xx",
-        "stm32u599xx"
+        {
+          "name": "stm32u5a5xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u5a9xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u5f7xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u5f9xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u5g7xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u5g9xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u535xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u545xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u575xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u585xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u595xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32u599xx",
+          "cores": [
+            "m33"
+          ]
+        }
       ]
     },
     {
@@ -411,10 +1460,30 @@
         "m0+"
       ],
       "socs": [
-        "stm32wb05",
-        "stm32wb06",
-        "stm32wb07",
-        "stm32wb09"
+        {
+          "name": "stm32wb05",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32wb06",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32wb07",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32wb09",
+          "cores": [
+            "m0+"
+          ]
+        }
       ]
     },
     {
@@ -423,11 +1492,36 @@
         "m33"
       ],
       "socs": [
-        "stm32wba23xx",
-        "stm32wba25xx",
-        "stm32wba52xx",
-        "stm32wba55xx",
-        "stm32wba65xx"
+        {
+          "name": "stm32wba23xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32wba25xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32wba52xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32wba55xx",
+          "cores": [
+            "m33"
+          ]
+        },
+        {
+          "name": "stm32wba65xx",
+          "cores": [
+            "m33"
+          ]
+        }
       ]
     },
     {
@@ -436,7 +1530,12 @@
         "m4f"
       ],
       "socs": [
-        "stm32wb55xx"
+        {
+          "name": "stm32wb55xx",
+          "cores": [
+            "m4f"
+          ]
+        }
       ]
     },
     {
@@ -445,9 +1544,24 @@
         "m0+"
       ],
       "socs": [
-        "stm32wl30xx",
-        "stm32wl31xx",
-        "stm32wl33xx"
+        {
+          "name": "stm32wl30xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32wl31xx",
+          "cores": [
+            "m0+"
+          ]
+        },
+        {
+          "name": "stm32wl33xx",
+          "cores": [
+            "m0+"
+          ]
+        }
       ]
     },
     {
@@ -456,10 +1570,30 @@
         "m4"
       ],
       "socs": [
-        "stm32wle4xx",
-        "stm32wle5xx",
-        "stm32wl54xx",
-        "stm32wl55xx"
+        {
+          "name": "stm32wle4xx",
+          "cores": [
+            "m4"
+          ]
+        },
+        {
+          "name": "stm32wle5xx",
+          "cores": [
+            "m4"
+          ]
+        },
+        {
+          "name": "stm32wl54xx",
+          "cores": [
+            "m4"
+          ]
+        },
+        {
+          "name": "stm32wl55xx",
+          "cores": [
+            "m4"
+          ]
+        }
       ]
     }
   ],
