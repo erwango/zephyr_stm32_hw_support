@@ -3,12 +3,12 @@
     "ref": "main",
     "file": "main.json",
     "zephyr_commit": "e933642266335706aeccd0ca63a494689bb23391",
-    "generated_at": "2026-11-20T14:37:27Z"
+    "generated_at": "2026-11-20T14:38:09Z"
   },
   {
     "ref": "v4.5.0",
     "file": "v4.5.0.json",
     "zephyr_commit": "41d10b59730406bbab4ca9f1fbbe9e96aafb4966",
-    "generated_at": "2026-11-20T14:37:33Z"
+    "generated_at": "2026-11-20T14:38:14Z"
   }
 ]

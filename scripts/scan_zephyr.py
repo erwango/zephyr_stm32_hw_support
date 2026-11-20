@@ -15,9 +15,9 @@ When a driver file can be matched via the ``DT_DRV_COMPAT`` macro convention,
 its path is still recorded for convenience (used by the site to link out to
 the driver source), but it has no effect on the reported support status.
 
-``clock`` and ``pinctrl`` bindings are mandatory baseline requirements for any
-upstream SoC port, so they are reported as metadata only and excluded from
-the per-series coverage grid.
+``pinctrl`` bindings are a mandatory baseline requirement for any upstream
+SoC port, so they are reported as metadata only and excluded from the
+per-series coverage grid.
 
 The result is written as a single JSON document. See README for the schema.
 
@@ -136,7 +136,12 @@ CATEGORY_OVERRIDES: dict[str, tuple[str, str]] = {
 
 # Categories that are mandatory baseline requirements for any upstream SoC
 # port. Driver-presence detection is skipped for these (metadata only).
-BASELINE_CATEGORIES = {"clock", "pinctrl"}
+#
+# "clock" used to be baseline too, but RCC/clock-tree bindings vary
+# significantly across series (e.g. PLL topology, HSI/MSI variants), so a
+# per-series supported/absent grid is still meaningful there, unlike
+# pinctrl which is a uniform, always-present requirement.
+BASELINE_CATEGORIES = {"pinctrl"}
 
 # Devicetree nodes may declare a fallback list, e.g.
 #   compatible = "st,stm32f4-flash-controller", "st,stm32-flash-controller";
