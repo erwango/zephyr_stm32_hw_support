@@ -44,56 +44,9 @@ jobs:
             --hal-stm32-path /tmp/hal_stm32 \
             --mode inplace --output data/main.json
 
-      - name: Discover new stable releases
-        run: |
-          python3 - <<'PY'
-          import json
-          import re
-          import subprocess
-          from pathlib import Path
-
-          out = subprocess.run(
-              ["git", "ls-remote", "--tags", "--refs",
-               "https://github.com/zephyrproject-rtos/zephyr"],
-              check=True, capture_output=True, text=True,
-          ).stdout
-          tags = set(re.findall(r"refs/tags/(v\d+\.\d+\.\d+)$", out, re.MULTILINE))
-          existing = {p.stem for p in Path("data").glob("v*.json")}
-          todo = sorted(tags - existing)
-          Path("/tmp/new_releases.json").write_text(json.dumps(todo))
-          print("new releases to scan:", todo)
-          PY
-
-      - name: Scan new releases
-        run: |
-          python3 - <<'PY'
-          import json
-          import subprocess
-          from pathlib import Path
-
-          todo = json.loads(Path("/tmp/new_releases.json").read_text())
-          for ref in todo:
-              clone_dir = f"/tmp/zephyr-{ref}"
-              subprocess.run(
-                  ["git", "clone", "--depth", "1", "--branch", ref,
-                   "https://github.com/zephyrproject-rtos/zephyr", clone_dir],
-                  check=True,
-              )
-              # Releases older than the current soc/st/stm32/soc.yml-based SoC
-              # catalog (e.g. v1.x) predate anything scan_zephyr.py can parse;
-              # skip them instead of letting one unscannable tag abort every
-              # other (actually new) release in this batch.
-              if not (Path(clone_dir) / "soc" / "st" / "stm32" / "soc.yml").is_file():
-                  print(f"skipping {ref}: no soc/st/stm32/soc.yml (pre-dates current SoC catalog)")
-                  continue
-              subprocess.run(
-                  ["python3", "scripts/scan_zephyr.py",
-                   "--zephyr-path", clone_dir, "--ref", ref,
-                   "--hal-stm32-path", "/tmp/hal_stm32",
-                   "--mode", "inplace", "--output", f"data/{ref}.json"],
-                  check=True,
-              )
-          PY
+      # Stable-release scanning (discover + scan new tags) is temporarily
+      # dropped to focus on main first; existing data/v*.json snapshots are
+      # left as-is and are no longer refreshed until this is reinstated.
 
       - name: Rebuild manifest
         run: python3 scripts/build_manifest.py
