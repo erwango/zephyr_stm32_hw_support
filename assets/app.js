@@ -334,20 +334,20 @@ function buildCategoryRow(ref, series, category, apis, expanded, coveragePct) {
   nameCell.textContent = apiCountLabel(category, apis);
   tr.appendChild(nameCell);
 
-  for (const s of series) {
-    const status = aggregateStatus(apis, s);
-    const td = document.createElement("td");
-    td.className = cellClass(status);
-    td.textContent = cellLabel(status);
-    tr.appendChild(td);
-  }
-
   if (state.showSilicon) {
     const covCell = document.createElement("td");
     covCell.className = "col-coverage";
     covCell.textContent = formatCoverage(coveragePct);
     covCell.title = "Ported / (ported + on-chip, not ported)";
     tr.appendChild(covCell);
+  }
+
+  for (const s of series) {
+    const status = aggregateStatus(apis, s);
+    const td = document.createElement("td");
+    td.className = cellClass(status);
+    td.textContent = cellLabel(status);
+    tr.appendChild(td);
   }
   return tr;
 }
@@ -362,32 +362,6 @@ function buildSectionSeparatorRow(seriesCount) {
   const td = document.createElement("td");
   td.colSpan = seriesCount + 3 + (state.showSilicon ? 1 : 0);
   tr.appendChild(td);
-  return tr;
-}
-
-// Grand-totals row: per-series ported/(ported+not_ported) %, with the
-// overall global % repeated in the trailing corner cell.
-function buildCoverageTotalsRow(series, stats) {
-  const tr = document.createElement("tr");
-  tr.className = "coverage-totals-row";
-
-  const labelCell = document.createElement("td");
-  labelCell.colSpan = 3;
-  labelCell.textContent = "Ported / on-chip coverage";
-  tr.appendChild(labelCell);
-
-  for (const s of series) {
-    const td = document.createElement("td");
-    td.className = "col-coverage";
-    td.textContent = formatCoverage(stats.bySeries.get(s));
-    tr.appendChild(td);
-  }
-
-  const globalCell = document.createElement("td");
-  globalCell.className = "col-coverage";
-  globalCell.textContent = formatCoverage(stats.global);
-  tr.appendChild(globalCell);
-
   return tr;
 }
 
@@ -432,6 +406,10 @@ function buildApiDetailRow(ref, series, category, api) {
   }
   tr.appendChild(nameCell);
 
+  if (state.showSilicon) {
+    tr.appendChild(document.createElement("td")); // coverage % (blank, category-level only)
+  }
+
   for (const s of series) {
     // The hal_stm32 IP catalog maps tokens per category, not per individual
     // compatible, so attributing not_ported/not_available to one specific
@@ -451,9 +429,6 @@ function buildApiDetailRow(ref, series, category, api) {
     }
     tr.appendChild(td);
   }
-  if (state.showSilicon) {
-    tr.appendChild(document.createElement("td")); // coverage % (blank, category-level only)
-  }
   return tr;
 }
 
@@ -463,6 +438,8 @@ function renderTable(report, filter) {
 
   const series = report.series.map((s) => s.name);
   const needle = filter.trim().toLowerCase();
+  const stats = state.showSilicon ? computeCoverageStats(report) : null;
+  updateCoverageBadge(stats);
 
   const table = document.createElement("table");
   const thead = document.createElement("thead");
@@ -473,17 +450,25 @@ function renderTable(report, filter) {
     th.className = "col-header-text";
     headRow.appendChild(th);
   }
-  for (const s of series) {
-    const th = document.createElement("th");
-    th.textContent = seriesShortName(s);
-    th.title = s;
-    headRow.appendChild(th);
-  }
   if (state.showSilicon) {
     const th = document.createElement("th");
     th.textContent = "Ported %";
     th.className = "col-header-text";
     th.title = "Ported / (ported + on-chip, not ported); hardware categories only";
+    headRow.appendChild(th);
+  }
+  for (const s of series) {
+    const th = document.createElement("th");
+    th.title = s;
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = seriesShortName(s);
+    th.appendChild(nameSpan);
+    if (stats) {
+      const pctSpan = document.createElement("span");
+      pctSpan.className = "series-coverage-badge";
+      pctSpan.textContent = formatCoverage(stats.bySeries.get(s));
+      th.appendChild(pctSpan);
+    }
     headRow.appendChild(th);
   }
   thead.appendChild(headRow);
@@ -492,9 +477,6 @@ function renderTable(report, filter) {
   const tbody = document.createElement("tbody");
   let categoryCount = 0;
   let lastSection = null;
-  const stats = state.showSilicon ? computeCoverageStats(report) : null;
-  updateCoverageBadge(stats);
-  let coverageRowInserted = false;
   for (const category of report.categories) {
     if (category.baseline) continue; // metadata only, no coverage grid
 
@@ -504,10 +486,6 @@ function renderTable(report, filter) {
 
     const section = category.section || "hardware";
     if (lastSection !== null && section !== lastSection) {
-      if (stats && !coverageRowInserted) {
-        tbody.appendChild(buildCoverageTotalsRow(series, stats));
-        coverageRowInserted = true;
-      }
       tbody.appendChild(buildSectionSeparatorRow(series.length));
     }
     lastSection = section;
@@ -523,9 +501,6 @@ function renderTable(report, filter) {
         tbody.appendChild(buildApiDetailRow(report.ref, series, category, api));
       }
     }
-  }
-  if (stats && !coverageRowInserted) {
-    tbody.appendChild(buildCoverageTotalsRow(series, stats));
   }
   table.appendChild(tbody);
 
