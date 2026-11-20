@@ -35,18 +35,19 @@
   <section>
     <h2 class="section-heading">Series</h2>
     <p class="note">
-      Series are grouped by the Cortex core Zephyr runs on. A
-      <strong>MPU</strong> badge marks STM32MPx microprocessors: Zephyr
-      targets that one core only, and any other on-chip core (e.g. an
-      application processor) is outside Zephyr's scope. A
-      <strong>multi-core</strong> badge marks series available with more
-      than one Zephyr-supported core (e.g. STM32H7's M4/M7 dual-core parts),
-      which appear once per core group. SoC count is the number of SoC part
-      numbers listed for that series in Zephyr's own catalog
+      One row per Cortex core, one column per series; each cell is the
+      number of SoC part numbers for that series that use that core (a
+      series with more than one Zephyr-supported core, e.g. STM32H7's
+      M4/M7 dual-core parts, has a cell filled in on more than one row).
+      Click a cell to see that series' SoC list. A <strong>MPU</strong>
+      badge marks STM32MPx microprocessors: Zephyr targets that one core
+      only, and any other on-chip core (e.g. an application processor) is
+      outside Zephyr's scope. SoC count is the number of SoC part numbers
+      listed for that series in Zephyr's own catalog
       (<code>soc/st/stm32/soc.yml</code>), i.e. SoCs with an upstream Zephyr
       port — not ST's full orderable part catalog, which may list
       additional package/temperature variants not individually declared in
-      Zephyr. Click a series to see its SoC list.
+      Zephyr.
     </p>
     <div id="series-table-container"></div>
   </section>

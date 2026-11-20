@@ -125,80 +125,69 @@ h1 {
   line-height: 1.35;
 }
 
-.series-groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 0.6rem;
+.series-pivot-wrapper {
+  overflow-x: auto;
   margin-bottom: 0.75rem;
-}
-
-.core-group {
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 0.5rem 0.6rem;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 30, 145, 0.06);
 }
 
-.core-group h3 {
-  margin: 0 0 0.35rem;
-  font-size: 0.78rem;
-  color: var(--brand-blue);
-}
-
-.core-group-count {
-  color: #888;
-  font-weight: 400;
-  margin-left: 0.15rem;
-}
-
-.series-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.series-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.15rem 0.5rem;
+.series-pivot {
+  width: auto;
   font-size: 0.68rem;
-  cursor: pointer;
+}
+
+.series-pivot th,
+.series-pivot td {
+  min-width: 2.4rem;
+}
+
+.series-pivot-corner {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.series-pivot thead th {
+  padding: 0.3rem 0.35rem;
+}
+
+.series-pivot tbody th {
+  position: sticky;
+  left: 0;
   background: #f6f8fa;
+  color: #24292f;
+  text-align: left;
+  white-space: nowrap;
+  padding: 0.2rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.series-cell {
+  cursor: pointer;
   transition: background 0.12s ease;
 }
 
-.series-chip:hover {
+.series-cell:hover {
   background: var(--brand-light-blue);
 }
 
+.series-cell-expanded {
+  background: var(--brand-light-blue);
+  font-weight: 700;
+}
+
 .mpu-badge {
+  display: block;
   background: var(--brand-yellow);
   color: #1b1f23;
   border-radius: 999px;
   padding: 0 0.35rem;
-  font-size: 0.6rem;
+  font-size: 0.56rem;
   font-weight: 700;
-}
-
-.dual-core-badge {
-  background: var(--brand-grey);
-  color: #fff;
-  border-radius: 999px;
-  padding: 0 0.35rem;
-  font-size: 0.6rem;
-}
-
-.soc-detail {
-  flex-basis: 100%;
-  font-size: 0.66rem;
-  color: #57606a;
-  background: var(--brand-light-blue);
-  border-radius: 6px;
-  padding: 0.3rem 0.5rem;
+  margin-top: 0.15rem;
 }
 
 .legend {
@@ -372,20 +361,17 @@ footer {
   .detail-row td {
     background: #0d1117;
   }
-  .core-group {
+  .series-pivot-wrapper {
+    border-color: #30363d;
+  }
+  .series-pivot tbody th {
     background: #161b22;
+    color: #c9d1d9;
     border-color: #30363d;
   }
-  .series-chip {
-    background: #0d1117;
-    border-color: #30363d;
-  }
-  .series-chip:hover {
+  .series-cell:hover,
+  .series-cell-expanded {
     background: #1c2128;
-  }
-  .soc-detail {
-    background: #1c2128;
-    color: #8b949e;
   }
   table,
   thead th,
