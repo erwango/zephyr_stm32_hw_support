@@ -2,17 +2,22 @@
 """Scan a Zephyr RTOS checkout for upstream STM32 hardware/API support.
 
 For every STM32-specific devicetree binding (``dts/bindings/*/st,stm32*.yaml``)
-this records, per STM32 series:
+this records, per STM32 series, whether the HW block is declared in that
+series' devicetree (``dts/arm/st/<series>/*.dtsi``). Devicetree is treated as
+the source of truth: a compatible node is only ever upstreamed together with
+its driver, so a node being present in the devicetree is taken to mean the
+peripheral is supported, without separately trying to match a driver source
+file (that matching is unreliable for several subsystems, e.g. RCC/pinctrl,
+where many compatibles are handled by family-wide driver files rather than
+the common one-compatible-per-``DT_DRV_COMPAT`` convention).
 
-  - whether the HW block is declared in that series' devicetree
-    (``dts/arm/st/<series>/*.dtsi``), and
-  - whether a Zephyr driver implementing it exists (matched via the
-    ``DT_DRV_COMPAT`` macro convention in ``drivers/``).
+When a driver file can be matched via the ``DT_DRV_COMPAT`` macro convention,
+its path is still recorded for convenience (used by the site to link out to
+the driver source), but it has no effect on the reported support status.
 
 ``clock`` and ``pinctrl`` bindings are mandatory baseline requirements for any
-upstream SoC port (and do not follow the one compatible <-> one
-``DT_DRV_COMPAT`` convention), so they are reported as metadata only and
-excluded from the per-series coverage grid.
+upstream SoC port, so they are reported as metadata only and excluded from
+the per-series coverage grid.
 
 The result is written as a single JSON document. See README for the schema.
 
@@ -262,12 +267,7 @@ def build_report(zephyr_root: Path, ref: str) -> dict:
             series_support = {}
             for s in series_out:
                 declared = binding["compatible"] in declared_by_series.get(s["name"], set())
-                if not declared:
-                    series_support[s["name"]] = "absent"
-                elif driver_paths:
-                    series_support[s["name"]] = "driver"
-                else:
-                    series_support[s["name"]] = "dt-only"
+                series_support[s["name"]] = "supported" if declared else "absent"
             api_entry["driver_paths"] = driver_paths
             api_entry["series_support"] = series_support
 
