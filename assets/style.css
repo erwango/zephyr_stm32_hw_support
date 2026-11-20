@@ -7,6 +7,9 @@
   --brand-light-blue: #dbe2e9;
   --color-supported: #1b7f3a;
   --color-supported-bg: #d9f2e2;
+  --color-not-ported: #9a6700;
+  --color-not-ported-bg: #fff3cc;
+  --color-not-available-bg: #e6e8eb;
   --color-absent-bg: #f0f2f4;
   --border: #d0d7de;
 }
@@ -97,6 +100,23 @@ h1 {
   min-width: 16rem;
 }
 
+.silicon-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.silicon-toggle input {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
 .commit-info {
   font-size: 0.72rem;
   color: var(--brand-light-blue);
@@ -119,6 +139,14 @@ h1 {
   color: #666;
   margin: 0 0 0.4rem;
   line-height: 1.35;
+}
+
+.silicon-note {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--color-not-ported);
+  border-radius: 6px;
+  background: var(--color-not-ported-bg);
+  color: #57450a;
 }
 
 .series-pivot-wrapper {
@@ -336,6 +364,17 @@ tbody td {
   font-weight: 700;
 }
 
+.cell-not-ported {
+  background: var(--color-not-ported-bg);
+  color: var(--color-not-ported);
+  font-weight: 700;
+}
+
+.cell-not-available {
+  background: var(--color-not-available-bg);
+  color: #57606a;
+}
+
 .cell-absent {
   background: var(--color-absent-bg);
 }
@@ -350,6 +389,13 @@ footer {
 }
 
 @media (prefers-color-scheme: dark) {
+  :root {
+    --color-supported-bg: #0f2e1b;
+    --color-not-ported-bg: #3a2e05;
+    --color-not-ported: #e3b341;
+    --color-not-available-bg: #1c2128;
+    --color-absent-bg: #161b22;
+  }
   body {
     background: #0d1117;
     color: #c9d1d9;
@@ -397,5 +443,11 @@ footer {
   .controls input {
     background: #161b22;
     color: #c9d1d9;
+  }
+  .cell-not-available {
+    color: #8b949e;
+  }
+  .silicon-note {
+    color: #e3b341;
   }
 }

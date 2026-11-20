@@ -10,6 +10,7 @@ const state = {
   search: "",
   expandedCategories: new Set(),
   expandedSeries: new Set(),
+  showSilicon: false,
 };
 
 async function fetchJSON(path) {
@@ -82,18 +83,49 @@ function link(href, text, title) {
   return a;
 }
 
+const CELL_CLASSES = {
+  supported: "cell-supported",
+  not_ported: "cell-not-ported",
+  not_available: "cell-not-available",
+  absent: "cell-absent",
+};
+
+const CELL_LABELS = {
+  supported: "\u2713",
+  not_ported: "\u25cf",
+  not_available: "\u2013",
+  absent: "",
+};
+
 function cellClass(status) {
-  return status === "supported" ? "cell-supported" : "cell-absent";
+  return CELL_CLASSES[status] || CELL_CLASSES.absent;
 }
 
 function cellLabel(status) {
-  return status === "supported" ? "\u2713" : "";
+  return CELL_LABELS[status] || CELL_LABELS.absent;
 }
 
+// Collapses the two hal_stm32-derived states back into the plain
+// pre-existing "absent" when the silicon-detail toggle is off, so that
+// detail is opt-in rather than always shown.
+function normalizeStatus(status) {
+  if (!state.showSilicon && (status === "not_ported" || status === "not_available")) {
+    return "absent";
+  }
+  return status;
+}
+
+// Pick the most informative status across a category's compatibles for one
+// series: a single "supported" compatible outweighs a sibling compatible
+// that's merely on-chip-but-unported, which in turn outweighs one that's
+// confirmed absent from the silicon entirely.
+const STATUS_PRIORITY = ["supported", "not_ported", "not_available", "absent"];
+
 function aggregateStatus(apis, seriesName) {
-  return apis.some((api) => (api.series_support || {})[seriesName] === "supported")
-    ? "supported"
-    : "absent";
+  const statuses = new Set(
+    apis.map((api) => normalizeStatus((api.series_support || {})[seriesName] || "absent"))
+  );
+  return STATUS_PRIORITY.find((status) => statuses.has(status)) || "absent";
 }
 
 function matchesFilter(category, api, needle) {
@@ -305,7 +337,7 @@ function buildApiDetailRow(ref, series, category, api) {
   tr.appendChild(nameCell);
 
   for (const s of series) {
-    const status = (api.series_support && api.series_support[s]) || "absent";
+    const status = normalizeStatus((api.series_support && api.series_support[s]) || "absent");
     const td = document.createElement("td");
     td.className = cellClass(status);
     td.textContent = cellLabel(status);
@@ -315,6 +347,10 @@ function buildApiDetailRow(ref, series, category, api) {
       } else if (api.series_states && api.series_states[s]) {
         td.title = `Power states: ${api.series_states[s].join(", ")}`;
       }
+    } else if (status === "not_ported") {
+      td.title = "On-chip per STM32Cube, no Zephyr binding/driver upstream yet.";
+    } else if (status === "not_available") {
+      td.title = "Not present on this series' silicon, per STM32Cube.";
     }
     tr.appendChild(td);
   }
@@ -412,6 +448,16 @@ async function init() {
   const search = document.getElementById("search-box");
   search.addEventListener("input", () => {
     state.search = search.value;
+    if (state.report) renderTable(state.report, state.search);
+  });
+
+  const siliconToggle = document.getElementById("silicon-toggle");
+  const siliconNote = document.getElementById("silicon-note");
+  const siliconLegendItems = document.querySelectorAll(".legend-silicon");
+  siliconToggle.addEventListener("change", () => {
+    state.showSilicon = siliconToggle.checked;
+    siliconNote.classList.toggle("hidden", !state.showSilicon);
+    siliconLegendItems.forEach((el) => el.classList.toggle("hidden", !state.showSilicon));
     if (state.report) renderTable(state.report, state.search);
   });
 
