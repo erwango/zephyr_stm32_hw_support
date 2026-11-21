@@ -2,8 +2,8 @@
   {
     "ref": "main",
     "file": "main.json",
-    "zephyr_commit": "c13cb68710266099fe6d3c80af9f6d2773c6207b",
-    "generated_at": "2026-11-20T16:35:36Z"
+    "zephyr_commit": "1b3f4f14ad2002beb743dba17b455a1f0c688639",
+    "generated_at": "2026-11-21T11:07:39Z"
   },
   {
     "ref": "v4.5.0",
