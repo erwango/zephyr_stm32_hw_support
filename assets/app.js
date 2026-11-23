@@ -438,7 +438,7 @@ function renderTable(report, filter) {
 
   const series = report.series.map((s) => s.name);
   const needle = filter.trim().toLowerCase();
-  const stats = state.showSilicon ? computeCoverageStats(report) : null;
+  const stats = state.showSilicon && report.hal_stm32_commit ? computeCoverageStats(report) : null;
   updateCoverageBadge(stats);
 
   const table = document.createElement("table");
@@ -521,8 +521,29 @@ async function loadRef(ref) {
   state.expandedSeries = new Set();
   document.getElementById("commit-info").textContent =
     `${entry.ref} @ ${entry.zephyr_commit.slice(0, 12)} \u2014 generated ${entry.generated_at}`;
+
+  // Older refs scanned before the hal_stm32-based classification existed
+  // have no not_ported data at all, which would make the coverage % show a
+  // misleading 100%/N/A everywhere; disable the toggle for those instead.
+  const siliconToggle = document.getElementById("silicon-toggle");
+  const hasSiliconData = Boolean(state.report.hal_stm32_commit);
+  siliconToggle.disabled = !hasSiliconData;
+  siliconToggle.closest(".silicon-toggle").title = hasSiliconData
+    ? ""
+    : "Not available for this ref: scanned before on-chip classification was added.";
+  if (!hasSiliconData) {
+    applySiliconToggle(false);
+  }
+
   renderSeriesTable(state.report);
   renderTable(state.report, state.search);
+}
+
+function applySiliconToggle(checked) {
+  state.showSilicon = checked;
+  document.getElementById("silicon-toggle").checked = checked;
+  document.getElementById("silicon-note").classList.toggle("hidden", !checked);
+  document.querySelectorAll(".legend-silicon").forEach((el) => el.classList.toggle("hidden", !checked));
 }
 
 async function init() {
@@ -546,12 +567,8 @@ async function init() {
   });
 
   const siliconToggle = document.getElementById("silicon-toggle");
-  const siliconNote = document.getElementById("silicon-note");
-  const siliconLegendItems = document.querySelectorAll(".legend-silicon");
   siliconToggle.addEventListener("change", () => {
-    state.showSilicon = siliconToggle.checked;
-    siliconNote.classList.toggle("hidden", !state.showSilicon);
-    siliconLegendItems.forEach((el) => el.classList.toggle("hidden", !state.showSilicon));
+    applySiliconToggle(siliconToggle.checked);
     if (state.report) renderTable(state.report, state.search);
   });
 

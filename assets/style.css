@@ -113,6 +113,15 @@ h1 {
   cursor: pointer;
 }
 
+.silicon-toggle:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.silicon-toggle input:disabled {
+  cursor: not-allowed;
+}
+
 .hidden {
   display: none !important;
 }
