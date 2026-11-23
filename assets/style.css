@@ -260,6 +260,10 @@ table {
   font-size: 0.72rem;
 }
 
+.col-hover {
+  box-shadow: inset 0 0 0 999px rgba(0, 30, 145, 0.08);
+}
+
 thead th {
   position: sticky;
   top: 0;
@@ -447,6 +451,9 @@ footer {
   }
   .category-row:hover {
     background: #1c2128;
+  }
+  .col-hover {
+    box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.08);
   }
   .coverage-badge {
     color: #8b949e;

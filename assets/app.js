@@ -510,7 +510,23 @@ function renderTable(report, filter) {
     container.appendChild(empty);
     return;
   }
+  enableColumnHover(table);
   container.appendChild(table);
+}
+
+// Mirrors the existing per-row hover highlight with a per-column one, so a
+// series can be traced down the whole table. Delegated on the table itself
+// (rebuilt fresh on every render) rather than per-cell listeners.
+function enableColumnHover(table) {
+  const toggle = (e, on) => {
+    const cell = e.target.closest("td, th");
+    if (!cell || !table.contains(cell) || cell.cellIndex < 0) return;
+    for (const row of table.rows) {
+      row.cells[cell.cellIndex]?.classList.toggle("col-hover", on);
+    }
+  };
+  table.addEventListener("mouseover", (e) => toggle(e, true));
+  table.addEventListener("mouseout", (e) => toggle(e, false));
 }
 
 async function loadRef(ref) {
