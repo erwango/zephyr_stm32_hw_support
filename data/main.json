@@ -1,8 +1,8 @@
 {
   "ref": "main",
-  "zephyr_commit": "1b3f4f14ad2002beb743dba17b455a1f0c688639",
+  "zephyr_commit": "7511baaeea2ed5c4debef067355031013b8ebe2e",
   "hal_stm32_commit": "fccc0f2ffdeeb21adca43fe8f052b371d5e95c6a",
-  "generated_at": "2026-11-22T11:28:55Z",
+  "generated_at": "2026-11-23T12:50:28Z",
   "series": [
     {
       "name": "stm32c0x",
