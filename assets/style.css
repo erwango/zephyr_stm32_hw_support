@@ -99,25 +99,6 @@ h1 {
   min-width: 16rem;
 }
 
-.stats-hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.8rem;
-  color: var(--brand-light-blue);
-  white-space: nowrap;
-}
-
-.key-hint {
-  font-size: 0.62rem;
-  font-family: inherit;
-  padding: 0.02rem 0.32rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: #fff;
-  color: #57606a;
-}
-
 .hidden {
   display: none !important;
 }
@@ -137,15 +118,6 @@ h1 {
   color: var(--brand-blue);
   border-left: 4px solid var(--brand-yellow);
   padding-left: 0.5rem;
-}
-
-.coverage-badge {
-  font-size: 0.68rem;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: normal;
-  color: #57606a;
-  margin-left: 0.5rem;
 }
 
 .note {
@@ -229,11 +201,12 @@ h1 {
 }
 
 .legend {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.78rem;
-  margin-left: auto;
+  color: #57606a;
+  margin-bottom: 0.4rem;
 }
 
 .legend-item {
@@ -356,21 +329,6 @@ tbody td {
   background: var(--brand-light-blue);
 }
 
-.col-coverage {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  padding-right: 0.6rem;
-  color: #8b949e;
-}
-
-.series-coverage-badge {
-  display: block;
-  font-size: 0.6rem;
-  font-weight: 400;
-  color: var(--brand-yellow);
-  opacity: 0.9;
-}
-
 .detail-row td {
   background: #fff;
 }
@@ -394,6 +352,12 @@ tbody td {
 .cell-supported {
   background: var(--color-supported-bg);
   color: var(--color-supported);
+  font-weight: 700;
+}
+
+.cell-not-ported {
+  background: var(--color-not-ported-bg);
+  color: var(--color-not-ported);
   font-weight: 700;
 }
 
@@ -426,11 +390,6 @@ footer {
   footer {
     color: #8b949e;
   }
-  .key-hint {
-    background: #161b22;
-    border-color: #30363d;
-    color: #8b949e;
-  }
   .section-heading {
     color: var(--brand-yellow);
     border-left-color: var(--brand-yellow);
@@ -443,9 +402,6 @@ footer {
   }
   .col-hover {
     box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.08);
-  }
-  .coverage-badge {
-    color: #8b949e;
   }
   .detail-row td {
     background: #0d1117;

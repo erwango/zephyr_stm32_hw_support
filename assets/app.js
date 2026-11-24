@@ -10,7 +10,6 @@ const state = {
   search: "",
   expandedCategories: new Set(),
   expandedSeries: new Set(),
-  showStats: false,
 };
 
 async function fetchJSON(path) {
@@ -85,11 +84,13 @@ function link(href, text, title) {
 
 const CELL_CLASSES = {
   supported: "cell-supported",
+  not_ported: "cell-not-ported",
   absent: "cell-absent",
 };
 
 const CELL_LABELS = {
   supported: "\u2713",
+  not_ported: "\u25cf",
   absent: "",
 };
 
@@ -104,9 +105,7 @@ function cellLabel(status) {
 // Pick the most informative status across a category's compatibles for one
 // series: a single "supported" compatible outweighs a sibling compatible
 // that's merely on-chip-but-unported, which in turn outweighs one that's
-// confirmed absent from the silicon entirely. Used for the (opt-in) stats
-// only; the grid itself only ever shows plain supported/absent (see
-// aggregateStatus below).
+// confirmed absent from the silicon entirely.
 const STATUS_PRIORITY = ["supported", "not_ported", "not_available", "absent"];
 
 function rawAggregateStatus(apis, seriesName) {
@@ -114,71 +113,12 @@ function rawAggregateStatus(apis, seriesName) {
   return STATUS_PRIORITY.find((status) => statuses.has(status)) || "absent";
 }
 
-// The grid is always the plain two-state comparison, regardless of the
-// stats toggle: on-chip-vs-ported detail is only ever surfaced in the
-// aggregated stats (Ported %), never as its own cell color.
+// The grid always shows the full comparison: "not_available" (confirmed
+// absent from the silicon) renders the same as plain "absent" (unknown),
+// since only supported vs. on-chip-but-not-ported is actionable here.
 function aggregateStatus(apis, seriesName) {
-  return rawAggregateStatus(apis, seriesName) === "supported" ? "supported" : "absent";
-}
-
-// Coverage % = supported / (supported + not_ported): of the series
-// STM32Cube confirms the silicon has (already ported, or on-chip but not
-// yet ported), what fraction is actually ported. null when that total is
-// zero (nothing on-chip to port, or no hal_stm32 classification at all).
-function coverageRatio(supported, notPorted) {
-  const denom = supported + notPorted;
-  return denom > 0 ? Math.round((100 * supported) / denom) : null;
-}
-
-function formatCoverage(pct) {
-  return pct === null ? "\u2013" : `${pct}%`;
-}
-
-// Hardware categories only, full dataset (ignores the search filter),
-// independent of the silicon-detail toggle (uses rawAggregateStatus).
-function computeCoverageStats(report) {
-  const seriesNames = report.series.map((s) => s.name);
-  const bySeriesCounts = new Map(seriesNames.map((s) => [s, { supported: 0, notPorted: 0 }]));
-  const byCategory = new Map();
-  let globalSupported = 0;
-  let globalNotPorted = 0;
-
-  for (const category of report.categories) {
-    if (category.baseline || (category.section || "hardware") !== "hardware") continue;
-    let supported = 0;
-    let notPorted = 0;
-    for (const s of seriesNames) {
-      const status = rawAggregateStatus(category.apis, s);
-      if (status === "supported") {
-        supported += 1;
-        bySeriesCounts.get(s).supported += 1;
-      } else if (status === "not_ported") {
-        notPorted += 1;
-        bySeriesCounts.get(s).notPorted += 1;
-      }
-    }
-    byCategory.set(`${category.group}/${category.name}`, coverageRatio(supported, notPorted));
-    globalSupported += supported;
-    globalNotPorted += notPorted;
-  }
-
-  const bySeries = new Map();
-  for (const [s, counts] of bySeriesCounts) {
-    bySeries.set(s, coverageRatio(counts.supported, counts.notPorted));
-  }
-
-  return { byCategory, bySeries, global: coverageRatio(globalSupported, globalNotPorted) };
-}
-
-function updateCoverageBadge(stats) {
-  const badge = document.getElementById("coverage-badge");
-  if (!stats) {
-    badge.classList.add("hidden");
-    return;
-  }
-  badge.textContent = `${formatCoverage(stats.global)} ported`;
-  badge.title = "Ported / (ported + on-chip, not ported) across all hardware categories and series";
-  badge.classList.remove("hidden");
+  const raw = rawAggregateStatus(apis, seriesName);
+  return raw === "not_available" ? "absent" : raw;
 }
 
 function matchesFilter(category, api, needle) {
@@ -294,7 +234,7 @@ function renderSeriesTable(report) {
 // API coverage table (one row per category, expandable to per-compatible)
 // ---------------------------------------------------------------------
 
-function buildCategoryRow(ref, series, category, apis, expanded, coveragePct) {
+function buildCategoryRow(ref, series, category, apis, expanded) {
   const tr = document.createElement("tr");
   tr.className = `category-row group-${category.group}`;
   tr.addEventListener("click", () => {
@@ -325,14 +265,6 @@ function buildCategoryRow(ref, series, category, apis, expanded, coveragePct) {
   nameCell.textContent = apiCountLabel(category, apis);
   tr.appendChild(nameCell);
 
-  if (state.showStats) {
-    const covCell = document.createElement("td");
-    covCell.className = "col-coverage";
-    covCell.textContent = formatCoverage(coveragePct);
-    covCell.title = "Ported / (ported + on-chip, not ported)";
-    tr.appendChild(covCell);
-  }
-
   for (const s of series) {
     const status = aggregateStatus(apis, s);
     const td = document.createElement("td");
@@ -351,7 +283,7 @@ function buildSectionSeparatorRow(seriesCount) {
   const tr = document.createElement("tr");
   tr.className = "section-separator-row";
   const td = document.createElement("td");
-  td.colSpan = seriesCount + 3 + (state.showStats ? 1 : 0);
+  td.colSpan = seriesCount + 3;
   tr.appendChild(td);
   return tr;
 }
@@ -397,15 +329,11 @@ function buildApiDetailRow(ref, series, category, api) {
   }
   tr.appendChild(nameCell);
 
-  if (state.showStats) {
-    tr.appendChild(document.createElement("td")); // coverage % (blank, category-level only)
-  }
-
   for (const s of series) {
     // The hal_stm32 IP catalog maps tokens per category, not per individual
-    // compatible, so attributing not_ported/not_available to one specific
-    // compatible would overstate precision the backend doesn't have.
-    // That detail is only shown aggregated at the category-row level.
+    // compatible, so attributing not_ported to one specific compatible
+    // would overstate precision the backend doesn't have. That detail is
+    // only shown aggregated at the category-row level.
     const rawStatus = (api.series_support && api.series_support[s]) || "absent";
     const status = rawStatus === "supported" ? "supported" : "absent";
     const td = document.createElement("td");
@@ -429,8 +357,6 @@ function renderTable(report, filter) {
 
   const series = report.series.map((s) => s.name);
   const needle = filter.trim().toLowerCase();
-  const stats = state.showStats && report.hal_stm32_commit ? computeCoverageStats(report) : null;
-  updateCoverageBadge(stats);
 
   const table = document.createElement("table");
   const thead = document.createElement("thead");
@@ -441,25 +367,10 @@ function renderTable(report, filter) {
     th.className = "col-header-text";
     headRow.appendChild(th);
   }
-  if (state.showStats) {
-    const th = document.createElement("th");
-    th.textContent = "Ported %";
-    th.className = "col-header-text";
-    th.title = "Ported / (ported + on-chip, not ported); hardware categories only";
-    headRow.appendChild(th);
-  }
   for (const s of series) {
     const th = document.createElement("th");
+    th.textContent = seriesShortName(s);
     th.title = s;
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = seriesShortName(s);
-    th.appendChild(nameSpan);
-    if (stats) {
-      const pctSpan = document.createElement("span");
-      pctSpan.className = "series-coverage-badge";
-      pctSpan.textContent = formatCoverage(stats.bySeries.get(s));
-      th.appendChild(pctSpan);
-    }
     headRow.appendChild(th);
   }
   thead.appendChild(headRow);
@@ -484,9 +395,7 @@ function renderTable(report, filter) {
     const key = `${category.group}/${category.name}`;
     const expanded = needle !== "" || state.expandedCategories.has(key);
 
-    tbody.appendChild(
-      buildCategoryRow(report.ref, series, category, apis, expanded, stats ? stats.byCategory.get(key) : undefined)
-    );
+    tbody.appendChild(buildCategoryRow(report.ref, series, category, apis, expanded));
     if (expanded) {
       for (const api of apis) {
         tbody.appendChild(buildApiDetailRow(report.ref, series, category, api));
@@ -529,22 +438,8 @@ async function loadRef(ref) {
   document.getElementById("commit-info").textContent =
     `${entry.ref} @ ${entry.zephyr_commit.slice(0, 12)} \u2014 generated ${entry.generated_at}`;
 
-  // Older refs scanned before the hal_stm32-based classification existed
-  // have no not_ported data at all, which would make the coverage % show a
-  // misleading 100%/N/A everywhere; force stats off for those.
-  if (!state.report.hal_stm32_commit) {
-    setStatsVisible(false);
-  }
-
   renderSeriesTable(state.report);
   renderTable(state.report, state.search);
-}
-
-// Stats are opt-in and keyboard-only (press "s"): no checkbox. The grid
-// itself always shows the plain supported/absent comparison regardless.
-function setStatsVisible(visible) {
-  state.showStats = visible;
-  document.getElementById("silicon-note").classList.toggle("hidden", !visible);
 }
 
 async function init() {
@@ -565,16 +460,6 @@ async function init() {
   search.addEventListener("input", () => {
     state.search = search.value;
     if (state.report) renderTable(state.report, state.search);
-  });
-
-  // "s" toggles the stats, except while typing in a field (search box,
-  // ref select), with a modifier held, or for a ref with no hal_stm32 data.
-  document.addEventListener("keydown", (e) => {
-    if (e.key.toLowerCase() !== "s" || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
-    if (!state.report || !state.report.hal_stm32_commit) return;
-    setStatsVisible(!state.showStats);
-    renderTable(state.report, state.search);
   });
 
   if (state.manifest.length > 0) {
