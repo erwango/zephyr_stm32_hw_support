@@ -22,14 +22,11 @@
       <label for="ref-select">Zephyr ref:</label>
       <select id="ref-select"></select>
       <input id="search-box" type="search" placeholder="Filter by API, compatible, category…" />
-      <label class="silicon-toggle" for="silicon-toggle">
-        <input type="checkbox" id="silicon-toggle" />
-        Show on-chip vs. ported detail
-      </label>
+      <span class="stats-hint" title="Ported % coverage stats (hidden by default)">
+        Stats <kbd class="key-hint">S</kbd>
+      </span>
       <span class="legend">
         <span class="legend-item"><span class="legend-swatch cell-supported"></span>supported</span>
-        <span class="legend-item legend-silicon hidden"><span class="legend-swatch cell-not-ported"></span>on-chip, not ported</span>
-        <span class="legend-item legend-silicon hidden"><span class="legend-swatch cell-not-available"></span>not on this series</span>
         <span class="legend-item"><span class="legend-swatch cell-absent"></span>not declared</span>
       </span>
     </div>
@@ -56,11 +53,11 @@
       category (e.g. NPU, RAM config).
     </p>
     <p id="silicon-note" class="note silicon-note hidden">
-      <strong>Note:</strong> on-chip vs. ported matching between STM32Cube
+      <strong>Note:</strong> the "Ported %" stats (press <kbd class="key-hint">S</kbd> to
+      toggle) are an automated match between STM32Cube
       (<a href="https://github.com/zephyrproject-rtos/hal_stm32" target="_blank" rel="noopener noreferrer">hal_stm32</a>)
-      and Zephyr devicetree is automated via a curated IP lookup table and
-      may not be 100% accurate. Treat it as a hint, not a certified spec;
-      the "Ported %" figures are derived from the same matching.
+      and Zephyr devicetree via a curated IP lookup table, and may not be
+      100% accurate. Treat it as a hint, not a certified spec.
     </p>
     <div id="table-container"></div>
   </section>

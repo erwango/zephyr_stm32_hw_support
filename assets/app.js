@@ -10,7 +10,7 @@ const state = {
   search: "",
   expandedCategories: new Set(),
   expandedSeries: new Set(),
-  showSilicon: false,
+  showStats: false,
 };
 
 async function fetchJSON(path) {
@@ -85,15 +85,11 @@ function link(href, text, title) {
 
 const CELL_CLASSES = {
   supported: "cell-supported",
-  not_ported: "cell-not-ported",
-  not_available: "cell-not-available",
   absent: "cell-absent",
 };
 
 const CELL_LABELS = {
   supported: "\u2713",
-  not_ported: "\u25cf",
-  not_available: "\u2013",
   absent: "",
 };
 
@@ -105,20 +101,12 @@ function cellLabel(status) {
   return CELL_LABELS[status] || CELL_LABELS.absent;
 }
 
-// Collapses the two hal_stm32-derived states back into the plain
-// pre-existing "absent" when the silicon-detail toggle is off, so that
-// detail is opt-in rather than always shown.
-function normalizeStatus(status) {
-  if (!state.showSilicon && (status === "not_ported" || status === "not_available")) {
-    return "absent";
-  }
-  return status;
-}
-
 // Pick the most informative status across a category's compatibles for one
 // series: a single "supported" compatible outweighs a sibling compatible
 // that's merely on-chip-but-unported, which in turn outweighs one that's
-// confirmed absent from the silicon entirely.
+// confirmed absent from the silicon entirely. Used for the (opt-in) stats
+// only; the grid itself only ever shows plain supported/absent (see
+// aggregateStatus below).
 const STATUS_PRIORITY = ["supported", "not_ported", "not_available", "absent"];
 
 function rawAggregateStatus(apis, seriesName) {
@@ -126,8 +114,11 @@ function rawAggregateStatus(apis, seriesName) {
   return STATUS_PRIORITY.find((status) => statuses.has(status)) || "absent";
 }
 
+// The grid is always the plain two-state comparison, regardless of the
+// stats toggle: on-chip-vs-ported detail is only ever surfaced in the
+// aggregated stats (Ported %), never as its own cell color.
 function aggregateStatus(apis, seriesName) {
-  return normalizeStatus(rawAggregateStatus(apis, seriesName));
+  return rawAggregateStatus(apis, seriesName) === "supported" ? "supported" : "absent";
 }
 
 // Coverage % = supported / (supported + not_ported): of the series
@@ -334,7 +325,7 @@ function buildCategoryRow(ref, series, category, apis, expanded, coveragePct) {
   nameCell.textContent = apiCountLabel(category, apis);
   tr.appendChild(nameCell);
 
-  if (state.showSilicon) {
+  if (state.showStats) {
     const covCell = document.createElement("td");
     covCell.className = "col-coverage";
     covCell.textContent = formatCoverage(coveragePct);
@@ -360,7 +351,7 @@ function buildSectionSeparatorRow(seriesCount) {
   const tr = document.createElement("tr");
   tr.className = "section-separator-row";
   const td = document.createElement("td");
-  td.colSpan = seriesCount + 3 + (state.showSilicon ? 1 : 0);
+  td.colSpan = seriesCount + 3 + (state.showStats ? 1 : 0);
   tr.appendChild(td);
   return tr;
 }
@@ -406,7 +397,7 @@ function buildApiDetailRow(ref, series, category, api) {
   }
   tr.appendChild(nameCell);
 
-  if (state.showSilicon) {
+  if (state.showStats) {
     tr.appendChild(document.createElement("td")); // coverage % (blank, category-level only)
   }
 
@@ -438,7 +429,7 @@ function renderTable(report, filter) {
 
   const series = report.series.map((s) => s.name);
   const needle = filter.trim().toLowerCase();
-  const stats = state.showSilicon && report.hal_stm32_commit ? computeCoverageStats(report) : null;
+  const stats = state.showStats && report.hal_stm32_commit ? computeCoverageStats(report) : null;
   updateCoverageBadge(stats);
 
   const table = document.createElement("table");
@@ -450,7 +441,7 @@ function renderTable(report, filter) {
     th.className = "col-header-text";
     headRow.appendChild(th);
   }
-  if (state.showSilicon) {
+  if (state.showStats) {
     const th = document.createElement("th");
     th.textContent = "Ported %";
     th.className = "col-header-text";
@@ -540,26 +531,20 @@ async function loadRef(ref) {
 
   // Older refs scanned before the hal_stm32-based classification existed
   // have no not_ported data at all, which would make the coverage % show a
-  // misleading 100%/N/A everywhere; disable the toggle for those instead.
-  const siliconToggle = document.getElementById("silicon-toggle");
-  const hasSiliconData = Boolean(state.report.hal_stm32_commit);
-  siliconToggle.disabled = !hasSiliconData;
-  siliconToggle.closest(".silicon-toggle").title = hasSiliconData
-    ? ""
-    : "Not available for this ref: scanned before on-chip classification was added.";
-  if (!hasSiliconData) {
-    applySiliconToggle(false);
+  // misleading 100%/N/A everywhere; force stats off for those.
+  if (!state.report.hal_stm32_commit) {
+    setStatsVisible(false);
   }
 
   renderSeriesTable(state.report);
   renderTable(state.report, state.search);
 }
 
-function applySiliconToggle(checked) {
-  state.showSilicon = checked;
-  document.getElementById("silicon-toggle").checked = checked;
-  document.getElementById("silicon-note").classList.toggle("hidden", !checked);
-  document.querySelectorAll(".legend-silicon").forEach((el) => el.classList.toggle("hidden", !checked));
+// Stats are opt-in and keyboard-only (press "s"): no checkbox. The grid
+// itself always shows the plain supported/absent comparison regardless.
+function setStatsVisible(visible) {
+  state.showStats = visible;
+  document.getElementById("silicon-note").classList.toggle("hidden", !visible);
 }
 
 async function init() {
@@ -582,10 +567,14 @@ async function init() {
     if (state.report) renderTable(state.report, state.search);
   });
 
-  const siliconToggle = document.getElementById("silicon-toggle");
-  siliconToggle.addEventListener("change", () => {
-    applySiliconToggle(siliconToggle.checked);
-    if (state.report) renderTable(state.report, state.search);
+  // "s" toggles the stats, except while typing in a field (search box,
+  // ref select), with a modifier held, or for a ref with no hal_stm32 data.
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() !== "s" || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if (!state.report || !state.report.hal_stm32_commit) return;
+    setStatsVisible(!state.showStats);
+    renderTable(state.report, state.search);
   });
 
   if (state.manifest.length > 0) {

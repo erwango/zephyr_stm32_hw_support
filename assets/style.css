@@ -9,7 +9,6 @@
   --color-supported-bg: #d9f2e2;
   --color-not-ported: #9a6700;
   --color-not-ported-bg: #fff3cc;
-  --color-not-available-bg: #e6e8eb;
   --color-absent-bg: #f0f2f4;
   --border: #d0d7de;
 }
@@ -100,26 +99,23 @@ h1 {
   min-width: 16rem;
 }
 
-.silicon-toggle {
+.stats-hint {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
   font-size: 0.8rem;
-  cursor: pointer;
+  color: var(--brand-light-blue);
   white-space: nowrap;
 }
 
-.silicon-toggle input {
-  cursor: pointer;
-}
-
-.silicon-toggle:has(input:disabled) {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.silicon-toggle input:disabled {
-  cursor: not-allowed;
+.key-hint {
+  font-size: 0.62rem;
+  font-family: inherit;
+  padding: 0.02rem 0.32rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  color: #57606a;
 }
 
 .hidden {
@@ -401,17 +397,6 @@ tbody td {
   font-weight: 700;
 }
 
-.cell-not-ported {
-  background: var(--color-not-ported-bg);
-  color: var(--color-not-ported);
-  font-weight: 700;
-}
-
-.cell-not-available {
-  background: var(--color-not-available-bg);
-  color: #57606a;
-}
-
 .cell-absent {
   background: var(--color-absent-bg);
 }
@@ -430,7 +415,6 @@ footer {
     --color-supported-bg: #0f2e1b;
     --color-not-ported-bg: #3a2e05;
     --color-not-ported: #e3b341;
-    --color-not-available-bg: #1c2128;
     --color-absent-bg: #161b22;
   }
   body {
@@ -440,6 +424,11 @@ footer {
   .note,
   .section-heading,
   footer {
+    color: #8b949e;
+  }
+  .key-hint {
+    background: #161b22;
+    border-color: #30363d;
     color: #8b949e;
   }
   .section-heading {
@@ -486,9 +475,6 @@ footer {
   .controls input {
     background: #161b22;
     color: #c9d1d9;
-  }
-  .cell-not-available {
-    color: #8b949e;
   }
   .silicon-note {
     color: #e3b341;
