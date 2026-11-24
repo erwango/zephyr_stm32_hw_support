@@ -120,6 +120,25 @@ h1 {
   padding-left: 0.5rem;
 }
 
+.coverage-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #57606a;
+  margin-left: 0.5rem;
+}
+
+.key-hint {
+  font-size: 0.62rem;
+  font-family: inherit;
+  padding: 0.02rem 0.32rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+  color: #57606a;
+}
+
 .note {
   font-size: 0.72rem;
   color: #666;
@@ -329,6 +348,21 @@ tbody td {
   background: var(--brand-light-blue);
 }
 
+.col-coverage {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 0.6rem;
+  color: #8b949e;
+}
+
+.series-coverage-badge {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: var(--brand-yellow);
+  opacity: 0.9;
+}
+
 .detail-row td {
   background: #fff;
 }
@@ -402,6 +436,14 @@ footer {
   }
   .col-hover {
     box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.08);
+  }
+  .coverage-badge {
+    color: #8b949e;
+  }
+  .key-hint {
+    background: #161b22;
+    border-color: #30363d;
+    color: #8b949e;
   }
   .detail-row td {
     background: #0d1117;
