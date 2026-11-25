@@ -1,8 +1,8 @@
 {
   "ref": "main",
-  "zephyr_commit": "10574f82fcaff200a50a20f84f36870881a4636f",
+  "zephyr_commit": "a844adec70ff2802c3b769b47c03a3a52001b84b",
   "hal_stm32_commit": "e498d337cb4640b691d19422fe5746898fd873ae",
-  "generated_at": "2026-11-24T13:47:24Z",
+  "generated_at": "2026-11-25T12:59:29Z",
   "series": [
     {
       "name": "stm32c0x",
@@ -10599,7 +10599,7 @@
             "stm32f7x": "supported",
             "stm32g0x": "supported",
             "stm32g4x": "supported",
-            "stm32g5x": "not_ported",
+            "stm32g5x": "supported",
             "stm32h5x": "supported",
             "stm32h7px": "not_ported",
             "stm32h7rsx": "supported",
@@ -10640,7 +10640,7 @@
             "stm32f7x": "supported",
             "stm32g0x": "supported",
             "stm32g4x": "supported",
-            "stm32g5x": "not_ported",
+            "stm32g5x": "supported",
             "stm32h5x": "supported",
             "stm32h7px": "not_ported",
             "stm32h7rsx": "supported",
