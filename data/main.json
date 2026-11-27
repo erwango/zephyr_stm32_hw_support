@@ -1,8 +1,8 @@
 {
   "ref": "main",
-  "zephyr_commit": "5589de50f1bfb0080b987e9001d7e5afe28e86b6",
+  "zephyr_commit": "ac8f8f387dd5300f8adf90b515910d74ba4ea2d4",
   "hal_stm32_commit": "ba344b95636b154092d139b9ce4640c629c3c05a",
-  "generated_at": "2026-11-26T12:39:37Z",
+  "generated_at": "2026-11-27T08:05:52Z",
   "series": [
     {
       "name": "stm32c0x",
@@ -1877,7 +1877,7 @@
             "stm32wb0x": "supported",
             "stm32wbax": "not_ported",
             "stm32wbx": "not_ported",
-            "stm32wl3x": "not_ported",
+            "stm32wl3x": "supported",
             "stm32wlx": "not_ported"
           }
         }
@@ -2426,10 +2426,10 @@
           "title": "ST STM32 Ethernet MAC",
           "binding_path": "dts/bindings/ethernet/st,stm32-ethernet.yaml",
           "driver_paths": [
-            "drivers/ethernet/eth_stm32_hal_v2.c",
-            "drivers/ethernet/eth_stm32_hal2.c",
-            "drivers/ethernet/eth_stm32_hal_common.c",
             "drivers/ethernet/eth_stm32_hal_v1.c",
+            "drivers/ethernet/eth_stm32_hal_v2.c",
+            "drivers/ethernet/eth_stm32_hal_common.c",
+            "drivers/ethernet/eth_stm32_hal2.c",
             "drivers/ethernet/dwc_mac/eth_stm32_dwc_ether_1000.c",
             "drivers/ethernet/dwc_mac/eth_stm32_dwc_ether_qos.c"
           ],
@@ -6484,7 +6484,7 @@
             "stm32g4x": "supported",
             "stm32g5x": "supported",
             "stm32h5x": "supported",
-            "stm32h7px": "absent",
+            "stm32h7px": "supported",
             "stm32h7rsx": "supported",
             "stm32h7x": "supported",
             "stm32l0x": "supported",
@@ -9172,7 +9172,7 @@
             "stm32g4x": "supported",
             "stm32g5x": "supported",
             "stm32h5x": "supported",
-            "stm32h7px": "not_ported",
+            "stm32h7px": "supported",
             "stm32h7rsx": "supported",
             "stm32h7x": "supported",
             "stm32l0x": "supported",
@@ -10239,7 +10239,7 @@
             "stm32g4x": "supported",
             "stm32g5x": "supported",
             "stm32h5x": "supported",
-            "stm32h7px": "not_ported",
+            "stm32h7px": "supported",
             "stm32h7rsx": "supported",
             "stm32h7x": "supported",
             "stm32l0x": "supported",
@@ -10374,8 +10374,8 @@
           "title": "",
           "binding_path": "dts/bindings/rtc/st,stm32-rtc.yaml",
           "driver_paths": [
-            "drivers/counter/counter_stm32_rtc.c",
-            "drivers/rtc/rtc_stm32.c"
+            "drivers/rtc/rtc_stm32.c",
+            "drivers/counter/counter_stm32_rtc.c"
           ],
           "series_support": {
             "stm32c0x": "supported",
@@ -10479,7 +10479,7 @@
             "stm32g4x": "supported",
             "stm32g5x": "supported",
             "stm32h5x": "supported",
-            "stm32h7px": "not_ported",
+            "stm32h7px": "supported",
             "stm32h7rsx": "supported",
             "stm32h7x": "supported",
             "stm32l0x": "supported",
