@@ -2,14 +2,40 @@ name: Update STM32 HW support data
 
 on:
   schedule:
-    - cron: "17 3 * * *"
+    # Triggers at both UTC offsets that 06:00/14:00 Europe/Paris time can
+    # fall on (CET = UTC+1, CEST = UTC+2); the "gate" job below skips
+    # whichever of the two is off-season, so "update" effectively runs at
+    # 06:00/14:00 Paris local time year-round, DST included.
+    - cron: "0 4,5 * * *"
+    - cron: "0 12,13 * * *"
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Check Europe/Paris local time
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          hour=$(TZ=Europe/Paris date +%H)
+          if [ "$hour" = "06" ] || [ "$hour" = "14" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
   update:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout dashboard repo
