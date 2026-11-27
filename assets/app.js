@@ -191,15 +191,13 @@ function computeCoverageStats(report) {
   return { byCategory, bySeries, global: coverageRatio(globalSupported, globalNotPorted) };
 }
 
-function updateCoverageBadge(stats) {
-  const badge = document.getElementById("coverage-badge");
-  if (!stats) {
-    badge.classList.add("hidden");
-    return;
-  }
+function buildCoverageBadge(stats) {
+  if (!stats) return null;
+  const badge = document.createElement("span");
+  badge.className = "coverage-badge";
   badge.textContent = `${formatCoverage(stats.global)} ported`;
   badge.title = "Ported / (ported + on-chip, not ported) across all hardware categories and series";
-  badge.classList.remove("hidden");
+  return badge;
 }
 
 function matchesFilter(category, api, needle) {
@@ -289,16 +287,50 @@ function buildSeriesRows(report, series, cols) {
   return rows;
 }
 
-// Divider row between the Series block and the API coverage block: the two
-// are rendered as one table (so series columns line up), but this keeps it
-// clear they are conceptually two different tables.
-function buildMajorDividerRow(colCount, label) {
+// Section title row: marks which of the two conceptual tables (Series /
+// API coverage) the rows that follow belong to. An optional extra node
+// (e.g. the global ported-% badge) can be appended after the label.
+function buildSectionTitleRow(colCount, label, extraNode) {
   const tr = document.createElement("tr");
-  tr.className = "major-divider-row";
+  tr.className = "section-title-row";
   const td = document.createElement("td");
   td.colSpan = colCount;
-  td.textContent = label;
+  td.appendChild(document.createTextNode(label));
+  if (extraNode) td.appendChild(extraNode);
   tr.appendChild(td);
+  return tr;
+}
+
+// Column-label sub-header for the API coverage block (Group/Category/API/
+// [Ported %] + per-series ported %), shown once right below the "API
+// coverage" section title and above the first category row. Kept out of
+// the sticky top-level <thead> (which only ever shows "Series" + the
+// series names) so that header stays uncluttered while scrolling.
+function buildCoverageSubHeaderRow(seriesObjs, stats) {
+  const tr = document.createElement("tr");
+  tr.className = "coverage-subheader-row";
+  for (const label of ["Group", "Category", "API"]) {
+    const th = document.createElement("th");
+    th.textContent = label;
+    th.className = "col-header-text";
+    tr.appendChild(th);
+  }
+  if (state.showStats) {
+    const th = document.createElement("th");
+    th.textContent = "Ported %";
+    th.className = "col-header-text";
+    th.title = "Ported / (ported + on-chip, not ported); hardware categories only";
+    tr.appendChild(th);
+  }
+  for (const s of seriesObjs) {
+    const th = document.createElement("th");
+    if (stats) {
+      th.textContent = formatCoverage(stats.bySeries.get(s.name));
+      th.title = `${s.name}: ported / (ported + on-chip, not ported)`;
+      th.className = "series-coverage-badge";
+    }
+    tr.appendChild(th);
+  }
   return tr;
 }
 
@@ -445,23 +477,18 @@ function renderTable(report, filter) {
   const cols = metaColCount();
   const needle = filter.trim().toLowerCase();
   const stats = state.showStats && report.hal_stm32_commit ? computeCoverageStats(report) : null;
-  updateCoverageBadge(stats);
 
   const table = document.createElement("table");
   const thead = document.createElement("thead");
   const headRow = document.createElement("tr");
-  for (const label of ["Group", "Category", "API"]) {
-    const th = document.createElement("th");
-    th.textContent = label;
-    th.className = "col-header-text";
-    headRow.appendChild(th);
-  }
-  if (state.showStats) {
-    const th = document.createElement("th");
-    th.textContent = "Ported %";
-    th.className = "col-header-text";
-    th.title = "Ported / (ported + on-chip, not ported); hardware categories only";
-    headRow.appendChild(th);
+  const seriesLabel = document.createElement("th");
+  seriesLabel.textContent = "Series";
+  seriesLabel.className = "col-header-text";
+  headRow.appendChild(seriesLabel);
+  // Blank filler cells so this row keeps the same cell count as every row
+  // below (see buildSeriesRows), keeping series columns' cellIndex aligned.
+  for (let i = 1; i < cols; i++) {
+    headRow.appendChild(document.createElement("th"));
   }
   for (const s of seriesObjs) {
     const th = document.createElement("th");
@@ -477,23 +504,21 @@ function renderTable(report, filter) {
         "Microprocessor: Zephyr targets this core; other on-chip cores (if any) are outside Zephyr's scope.";
       th.appendChild(badge);
     }
-    if (stats) {
-      const pctSpan = document.createElement("span");
-      pctSpan.className = "series-coverage-badge";
-      pctSpan.textContent = formatCoverage(stats.bySeries.get(s.name));
-      th.appendChild(pctSpan);
-    }
     headRow.appendChild(th);
   }
   thead.appendChild(headRow);
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
+  const fullWidth = cols + series.length;
 
+  tbody.appendChild(buildSectionTitleRow(fullWidth, "SoC coverage"));
   for (const row of buildSeriesRows(report, seriesObjs, cols)) {
     tbody.appendChild(row);
   }
-  tbody.appendChild(buildMajorDividerRow(cols + series.length, "API coverage"));
+
+  tbody.appendChild(buildSectionTitleRow(fullWidth, "API Coverage", buildCoverageBadge(stats)));
+  tbody.appendChild(buildCoverageSubHeaderRow(seriesObjs, stats));
 
   let categoryCount = 0;
   let lastSection = null;
@@ -526,7 +551,7 @@ function renderTable(report, filter) {
   if (categoryCount === 0) {
     const tr = document.createElement("tr");
     const td = document.createElement("td");
-    td.colSpan = cols + series.length;
+    td.colSpan = fullWidth;
     td.textContent = "No matching APIs.";
     tr.appendChild(td);
     tbody.appendChild(tr);

@@ -110,22 +110,13 @@ h1 {
   opacity: 0.85;
 }
 
-.section-heading {
-  font-size: 1rem;
-  margin: 0.9rem 0 0.3rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--brand-blue);
-  border-left: 4px solid var(--brand-yellow);
-  padding-left: 0.5rem;
-}
-
 .coverage-badge {
   font-size: 0.68rem;
   font-weight: 600;
   text-transform: none;
   letter-spacing: normal;
-  color: #57606a;
+  color: inherit;
+  opacity: 0.75;
   margin-left: 0.5rem;
 }
 
@@ -283,19 +274,46 @@ tbody td {
   background: transparent;
 }
 
-/* Marks the boundary between the Series block and the API coverage block:
+/* Marks the boundary between the "SoC coverage" and "API Coverage" blocks:
    bolder than .section-separator-row so the two stay visually distinct even
    though they now share one table. */
-.major-divider-row td {
+.section-title-row td {
   padding: 0.3rem 0.5rem;
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  text-align: left;
   color: var(--brand-blue);
   background: var(--brand-light-blue);
   border-top: 2px solid var(--brand-blue);
   border-bottom: 2px solid var(--brand-blue);
+}
+
+/* Column labels for the API Coverage block, shown once right below its
+   section title row rather than in the sticky top-level header (which only
+   ever shows "Series" + the series names). Styled like .section-title-row
+   (not like the sticky <thead>) so it reads as a continuation of the "API
+   Coverage" caption above it, not as another top-level header. */
+.coverage-subheader-row th {
+  position: static;
+  background: var(--brand-light-blue);
+  color: var(--brand-blue);
+  font-weight: 700;
+  border-bottom: 2px solid var(--brand-blue);
+  padding: 0.3rem 0.4rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.coverage-subheader-row th.col-header-text {
+  text-align: left;
+}
+
+.coverage-subheader-row th.series-coverage-badge {
+  display: table-cell;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 .category-row {
@@ -392,13 +410,8 @@ footer {
     color: #c9d1d9;
   }
   .note,
-  .section-heading,
   footer {
     color: #8b949e;
-  }
-  .section-heading {
-    color: var(--brand-yellow);
-    border-left-color: var(--brand-yellow);
   }
   .category-row {
     background: #161b22;
@@ -409,19 +422,21 @@ footer {
   .col-hover {
     box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.08);
   }
-  .coverage-badge {
-    color: #8b949e;
-  }
   .detail-row td {
     background: #0d1117;
   }
   .series-row-header {
     color: #c9d1d9;
   }
-  .major-divider-row td {
+  .section-title-row td {
     color: var(--brand-yellow);
     background: #1c2128;
     border-top-color: var(--brand-yellow);
+    border-bottom-color: var(--brand-yellow);
+  }
+  .coverage-subheader-row th {
+    background: #1c2128;
+    color: var(--brand-yellow);
     border-bottom-color: var(--brand-yellow);
   }
   .series-cell:hover,
