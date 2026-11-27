@@ -200,6 +200,19 @@ function buildCoverageBadge(stats) {
   return badge;
 }
 
+// Total count of distinct upstream-supported SoCs, across all series. Shown
+// alongside the Ported % stats (no trustable source to compare this count
+// against, so it stays a plain total rather than a coverage ratio).
+function buildSocCountBadge(report) {
+  if (!state.showStats) return null;
+  const total = report.series.reduce((sum, s) => sum + s.socs.length, 0);
+  const badge = document.createElement("span");
+  badge.className = "coverage-badge";
+  badge.textContent = `${total} SoCs supported`;
+  badge.title = "Total number of distinct STM32 SoCs with upstream Zephyr support";
+  return badge;
+}
+
 function matchesFilter(category, api, needle) {
   if (!needle) return true;
   return (
@@ -512,7 +525,7 @@ function renderTable(report, filter) {
   const tbody = document.createElement("tbody");
   const fullWidth = cols + series.length;
 
-  tbody.appendChild(buildSectionTitleRow(fullWidth, "SoC coverage"));
+  tbody.appendChild(buildSectionTitleRow(fullWidth, "SoC coverage", buildSocCountBadge(report)));
   for (const row of buildSeriesRows(report, seriesObjs, cols)) {
     tbody.appendChild(row);
   }
