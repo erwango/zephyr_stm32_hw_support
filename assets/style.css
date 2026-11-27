@@ -144,44 +144,11 @@ h1 {
   color: #57450a;
 }
 
-.series-pivot-wrapper {
-  overflow-x: auto;
-  margin-bottom: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-.series-pivot {
-  width: 100%;
-  font-size: 0.68rem;
-}
-
-.series-pivot th,
-.series-pivot td {
-  min-width: 2.4rem;
-}
-
-.series-pivot-corner {
-  text-align: left;
-  position: sticky;
-  left: 0;
-  z-index: 2;
-}
-
-.series-pivot thead th {
-  padding: 0.3rem 0.35rem;
-}
-
-.series-pivot tbody th {
-  position: sticky;
-  left: 0;
-  background: #f6f8fa;
-  color: #24292f;
+.series-row-header {
   text-align: left;
   white-space: nowrap;
-  padding: 0.2rem 0.5rem;
-  border-bottom: 1px solid var(--border);
-  border-right: 1px solid var(--border);
+  font-weight: 700;
+  color: #24292f;
 }
 
 .series-cell {
@@ -316,6 +283,21 @@ tbody td {
   background: transparent;
 }
 
+/* Marks the boundary between the Series block and the API coverage block:
+   bolder than .section-separator-row so the two stay visually distinct even
+   though they now share one table. */
+.major-divider-row td {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--brand-blue);
+  background: var(--brand-light-blue);
+  border-top: 2px solid var(--brand-blue);
+  border-bottom: 2px solid var(--brand-blue);
+}
+
 .category-row {
   cursor: pointer;
   font-weight: 600;
@@ -334,8 +316,8 @@ tbody td {
 .category-row.group-misc { border-left-color: #57606a; }
 .category-row.group-other { border-left-color: var(--brand-grey); }
 
-.category-row:hover {
-  background: var(--brand-light-blue);
+.category-row:hover > td {
+  box-shadow: inset 0 0 0 999px rgba(0, 30, 145, 0.08);
 }
 
 .col-coverage {
@@ -421,8 +403,8 @@ footer {
   .category-row {
     background: #161b22;
   }
-  .category-row:hover {
-    background: #1c2128;
+  .category-row:hover > td {
+    box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.08);
   }
   .col-hover {
     box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.08);
@@ -433,13 +415,14 @@ footer {
   .detail-row td {
     background: #0d1117;
   }
-  .series-pivot-wrapper {
-    border-color: #30363d;
-  }
-  .series-pivot tbody th {
-    background: #161b22;
+  .series-row-header {
     color: #c9d1d9;
-    border-color: #30363d;
+  }
+  .major-divider-row td {
+    color: var(--brand-yellow);
+    background: #1c2128;
+    border-top-color: var(--brand-yellow);
+    border-bottom-color: var(--brand-yellow);
   }
   .series-cell:hover,
   .series-cell-expanded {

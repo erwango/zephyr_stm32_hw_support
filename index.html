@@ -15,8 +15,9 @@
       <code>compatible</code>) are upstream in
       <a href="https://github.com/zephyrproject-rtos/zephyr" target="_blank" rel="noopener noreferrer">zephyrproject-rtos/zephyr</a>,
       per STM32 series. Devicetree is treated as the source of truth: a node is
-      only ever upstreamed together with its driver. Refreshed daily on
-      <code>main</code>, snapshotted once per stable release.
+      only ever upstreamed together with its driver. Refreshed twice daily
+      (06:00 and 14:00 Europe/Paris time) on <code>main</code>, snapshotted
+      once per stable release.
     </p>
     <div class="controls">
       <label for="ref-select">Zephyr ref:</label>
@@ -29,21 +30,18 @@
 
 <main class="page">
   <section>
-    <h2 class="section-heading">Series</h2>
-    <p class="note">
-      Rows = Cortex core, columns = series, cells = SoC count. Click a cell
-      for the SoC list. <strong>MPU</strong> = STM32MPx microprocessor;
-      Zephyr runs on that one core only.
-    </p>
-    <div id="series-table-container"></div>
-  </section>
-
-  <section>
     <h2 class="section-heading">API coverage<span id="coverage-badge" class="coverage-badge hidden"></span></h2>
     <p class="note">
-      Click a row (or ▸) to expand per-<code>compatible</code> detail.
-      <strong>Misc</strong> = bindings not tied to a specific peripheral
-      category (e.g. NPU, RAM config).
+      <strong>Series</strong> block (top): rows = Cortex core, columns =
+      series, cells = SoC count. Click a cell for the SoC list.
+      <strong>MPU</strong> = STM32MPx microprocessor; Zephyr runs on that one
+      core only.
+    </p>
+    <p class="note">
+      <strong>API coverage</strong> block (below the divider): click a row
+      (or ▸) to expand per-<code>compatible</code> detail. <strong>Misc</strong>
+      = bindings not tied to a specific peripheral category (e.g. NPU, RAM
+      config).
     </p>
     <p class="note silicon-note">
       <strong>Note:</strong> on-chip vs. ported matching between STM32Cube

@@ -50,6 +50,27 @@ function coreLabel(core) {
   return CORE_LABELS[core] || `Cortex-${core.toUpperCase()}`;
 }
 
+// Scans run at 06:00/14:00 Europe/Paris local time (DST-adjusted, see
+// .github/workflows/update.yml); display timestamps the same way rather
+// than in the browser's local timezone or raw UTC.
+function formatTimestampParis(isoUtc) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Paris",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZoneName: "short",
+  }).formatToParts(new Date(isoUtc));
+  const get = (type) => parts.find((p) => p.type === type).value;
+  // Some engines report midnight as hour "24" rather than "00".
+  const hour = get("hour") === "24" ? "00" : get("hour");
+  return `${get("year")}-${get("month")}-${get("day")} ${hour}:${get("minute")}:${get("second")} ${get("timeZoneName")}`;
+}
+
 // Zephyr's published docs use "/latest/" for main and "/<X.Y.Z>/" (no "v"
 // prefix) for tagged releases.
 function docVersion(ref) {
@@ -193,54 +214,36 @@ function matchesFilter(category, api, needle) {
 
 // ---------------------------------------------------------------------
 // Series (Core x Series pivot: rows are Cortex cores, columns are series,
-// cells show the SoC count; click a cell to expand its SoC list)
+// cells show the SoC count; click a cell to expand its SoC list). Rendered
+// as the lead block of the combined table below, ahead of a divider row,
+// so its series columns line up with the API coverage grid's.
 // ---------------------------------------------------------------------
 
-function renderSeriesTable(report) {
-  const container = document.getElementById("series-table-container");
-  container.replaceChildren();
+// Number of leading (non-series) columns in the combined table: Group,
+// Category, API and, when stats are on, Ported %.
+function metaColCount() {
+  return 3 + (state.showStats ? 1 : 0);
+}
 
+function buildSeriesRows(report, series, cols) {
   const cores = CORE_ORDER.filter((core) => report.series.some((s) => s.cores.includes(core)));
-  const series = [...report.series].sort((a, b) => a.name.localeCompare(b.name));
+  const rows = [];
 
-  const wrapper = document.createElement("div");
-  wrapper.className = "series-pivot-wrapper";
-
-  const table = document.createElement("table");
-  table.className = "series-pivot";
-
-  const thead = document.createElement("thead");
-  const headRow = document.createElement("tr");
-  const coreHeader = document.createElement("th");
-  coreHeader.textContent = "Core";
-  coreHeader.className = "series-pivot-corner";
-  headRow.appendChild(coreHeader);
-  for (const s of series) {
-    const th = document.createElement("th");
-    th.title = s.name;
-    const name = document.createElement("span");
-    name.textContent = seriesShortName(s.name);
-    th.appendChild(name);
-    if (isMpuSeries(s.name)) {
-      const badge = document.createElement("span");
-      badge.className = "mpu-badge";
-      badge.textContent = "MPU";
-      badge.title =
-        "Microprocessor: Zephyr targets this core; other on-chip cores (if any) are outside Zephyr's scope.";
-      th.appendChild(badge);
-    }
-    headRow.appendChild(th);
-  }
-  thead.appendChild(headRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
   for (const core of cores) {
     const row = document.createElement("tr");
+    row.className = "series-row";
     const rowHeader = document.createElement("th");
     rowHeader.scope = "row";
+    rowHeader.className = "series-row-header";
     rowHeader.textContent = coreLabel(core);
     row.appendChild(rowHeader);
+    // Blank filler cells so this row has the same cell count as the API
+    // coverage rows below (Group/Category/API[/Ported %]), keeping series
+    // columns' cellIndex - and therefore the column-hover highlight -
+    // aligned across both blocks.
+    for (let i = 1; i < cols; i++) {
+      row.appendChild(document.createElement("td"));
+    }
 
     const expandedHere = [];
     for (const s of series) {
@@ -258,7 +261,7 @@ function renderSeriesTable(report) {
           } else {
             state.expandedSeries.add(key);
           }
-          renderSeriesTable(report);
+          renderTable(state.report, state.search);
         });
         if (expanded) expandedHere.push({ series: s, socs: socsWithCore });
       } else {
@@ -267,26 +270,36 @@ function renderSeriesTable(report) {
       }
       row.appendChild(td);
     }
-    tbody.appendChild(row);
+    rows.push(row);
 
     for (const { series: s, socs } of expandedHere) {
       const detailRow = document.createElement("tr");
       detailRow.className = "detail-row";
       const td = document.createElement("td");
-      td.colSpan = series.length + 1;
+      td.colSpan = cols + series.length;
       const label = document.createElement("strong");
       label.textContent = `${s.name}: `;
       td.appendChild(label);
       td.appendChild(document.createTextNode(socs.map((soc) => soc.name).join(", ")));
       detailRow.appendChild(td);
-      tbody.appendChild(detailRow);
+      rows.push(detailRow);
     }
   }
 
-  table.appendChild(tbody);
+  return rows;
+}
 
-  wrapper.appendChild(table);
-  container.appendChild(wrapper);
+// Divider row between the Series block and the API coverage block: the two
+// are rendered as one table (so series columns line up), but this keeps it
+// clear they are conceptually two different tables.
+function buildMajorDividerRow(colCount, label) {
+  const tr = document.createElement("tr");
+  tr.className = "major-divider-row";
+  const td = document.createElement("td");
+  td.colSpan = colCount;
+  td.textContent = label;
+  tr.appendChild(td);
+  return tr;
 }
 
 
@@ -351,7 +364,7 @@ function buildSectionSeparatorRow(seriesCount) {
   const tr = document.createElement("tr");
   tr.className = "section-separator-row";
   const td = document.createElement("td");
-  td.colSpan = seriesCount + 3 + (state.showStats ? 1 : 0);
+  td.colSpan = seriesCount + metaColCount();
   tr.appendChild(td);
   return tr;
 }
@@ -427,7 +440,9 @@ function renderTable(report, filter) {
   const container = document.getElementById("table-container");
   container.replaceChildren();
 
-  const series = report.series.map((s) => s.name);
+  const seriesObjs = [...report.series].sort((a, b) => a.name.localeCompare(b.name));
+  const series = seriesObjs.map((s) => s.name);
+  const cols = metaColCount();
   const needle = filter.trim().toLowerCase();
   const stats = state.showStats && report.hal_stm32_commit ? computeCoverageStats(report) : null;
   updateCoverageBadge(stats);
@@ -448,16 +463,24 @@ function renderTable(report, filter) {
     th.title = "Ported / (ported + on-chip, not ported); hardware categories only";
     headRow.appendChild(th);
   }
-  for (const s of series) {
+  for (const s of seriesObjs) {
     const th = document.createElement("th");
-    th.title = s;
+    th.title = s.name;
     const nameSpan = document.createElement("span");
-    nameSpan.textContent = seriesShortName(s);
+    nameSpan.textContent = seriesShortName(s.name);
     th.appendChild(nameSpan);
+    if (isMpuSeries(s.name)) {
+      const badge = document.createElement("span");
+      badge.className = "mpu-badge";
+      badge.textContent = "MPU";
+      badge.title =
+        "Microprocessor: Zephyr targets this core; other on-chip cores (if any) are outside Zephyr's scope.";
+      th.appendChild(badge);
+    }
     if (stats) {
       const pctSpan = document.createElement("span");
       pctSpan.className = "series-coverage-badge";
-      pctSpan.textContent = formatCoverage(stats.bySeries.get(s));
+      pctSpan.textContent = formatCoverage(stats.bySeries.get(s.name));
       th.appendChild(pctSpan);
     }
     headRow.appendChild(th);
@@ -466,6 +489,12 @@ function renderTable(report, filter) {
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
+
+  for (const row of buildSeriesRows(report, seriesObjs, cols)) {
+    tbody.appendChild(row);
+  }
+  tbody.appendChild(buildMajorDividerRow(cols + series.length, "API coverage"));
+
   let categoryCount = 0;
   let lastSection = null;
   for (const category of report.categories) {
@@ -493,14 +522,17 @@ function renderTable(report, filter) {
       }
     }
   }
-  table.appendChild(tbody);
 
   if (categoryCount === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = "No matching APIs.";
-    container.appendChild(empty);
-    return;
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = cols + series.length;
+    td.textContent = "No matching APIs.";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
   }
+
+  table.appendChild(tbody);
   enableColumnHover(table);
   container.appendChild(table);
 }
@@ -527,7 +559,7 @@ async function loadRef(ref) {
   state.expandedCategories = new Set();
   state.expandedSeries = new Set();
   document.getElementById("commit-info").textContent =
-    `${entry.ref} @ ${entry.zephyr_commit.slice(0, 12)} \u2014 generated ${entry.generated_at}`;
+    `${entry.ref} @ ${entry.zephyr_commit.slice(0, 12)} \u2014 generated ${formatTimestampParis(entry.generated_at)}`;
 
   // Older refs scanned before the hal_stm32-based classification existed
   // have no not_ported data at all, which would make the coverage % show a
@@ -536,7 +568,6 @@ async function loadRef(ref) {
     setStatsVisible(false);
   }
 
-  renderSeriesTable(state.report);
   renderTable(state.report, state.search);
 }
 
