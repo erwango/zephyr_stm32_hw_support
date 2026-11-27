@@ -98,8 +98,17 @@ ips:
   gpdma: {categories: ["system/dma"]}
   hpdma: {categories: ["system/dma"]}
 
-  cordic: {categories: ["misc/misc"], notes: "Math accelerator, no dedicated dashboard category."}
-  fmac: {categories: ["misc/misc"], notes: "Filter math accelerator, no dedicated dashboard category."}
+  # cordic/fmac (math accelerators) are deliberately NOT mapped to
+  # "misc/misc" despite being genuine, distinguishable on-chip IPs: that
+  # category is CATEGORY_OVERRIDES' catch-all for whatever lands under
+  # Zephyr's dts/bindings/misc/ (currently NPU and RAMCFG, both
+  # stm32n6-only), and scan_zephyr.py applies a category's silicon tokens
+  # uniformly to every compatible bucketed into it. Mapping cordic/fmac
+  # there made every *other* series with a cordic/fmac HAL driver -- most
+  # of them, since cordic/fmac predate NPU/RAMCFG by years -- show up as
+  # "not_ported" for NPU/RAMCFG too, even though neither IP exists on that
+  # silicon at all. Left unclassified (triaged via the build warning
+  # below) until the dashboard has a category of its own for them.
 
 ignored:
   - rcc

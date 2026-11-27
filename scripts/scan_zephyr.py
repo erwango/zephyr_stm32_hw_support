@@ -146,6 +146,14 @@ CATEGORY_GROUPS: dict[str, str] = {
 #   far: series-count has no bearing on which peripheral category it
 #   belongs to (e.g. st,stm32-bdma is still a "dma" binding regardless of
 #   how many series have it upstream).
+#   Unlike every other (group, category) pair, "misc/misc" is a true
+#   catch-all, not a single peripheral type: whatever lands under
+#   dts/bindings/misc/ ends up here regardless of what it actually is.
+#   ip_catalog.yaml's token -> category mapping is applied uniformly to
+#   every compatible sharing a (group, category), so it must never map an
+#   IP token to "misc/misc" (see ip_catalog.yaml's cordic/fmac comment):
+#   doing so would make every series with that unrelated IP show up as
+#   "not_ported" for every other misc/misc binding too.
 CATEGORY_OVERRIDES: dict[str, tuple[str, str]] = {
     "phy": ("communication", "usb"),
     "ospi": ("memory", "xspi"),
